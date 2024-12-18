@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Name Explorer</title>
     <link rel="stylesheet" href="styles.css">
-
 </head>
 <body>
     <div class="container">
@@ -13,17 +12,17 @@
             <h1>Your Lucky Color</h1>
             <div class="color-box" id="mainColor"></div>
             <div class="color-info">
-                <div class="color-name" id="colorName"></div>
+                <div class="name-container">
+                    <div class="color-name" id="colorName"></div>
+                </div>
                 <div class="hex-code" id="hexCode"></div>
             </div>
             <button onclick="generateNewColor()">Get New Lucky Color</button>
         </div>
 
-        <div class="variations-grid" id="variationsGrid">
-        </div>
+        <div class="variations-grid" id="variationsGrid"></div>
     </div>
 
     <script src="script.js"></script>
-    <script src="test.js"></script>
 </body>
 </html>

@@ -26,19 +26,98 @@ const baseColors = [
 ];
 
 const luminosityWords = [
-    "Shadowed", "Dark", "Deep", "Muted", 
-    "Clear", "Bright", "Brilliant", "Radiant"
+    // Darkest to Brightest
+    "Shadowed", "Dark", "Deep", "Muted",
+    "Dim", "Dusky", "Faded", "Subdued",
+    "Darkened", "Shaded", "Twilight", "Tenebrous",
+    "Obscured", "Somber", "Gloomy", "Murky",
+    "Veiled", "Hazy", "Overcast", "Subtle",
+    "Neutral", "Balanced", "Moderate", "Medium",
+    "Clear", "Lucid", "Luminous", "Glowing",
+    "Light", "Bright", "Vivid", "Lustrous",
+    "Gleaming", "Brilliant", "Radiant", "Blazing",
+    "Shining", "Illuminated", "Beaming", "Glaring",
+    "Dazzling", "Intense", "Burning", "Flashing",
+    "Sparkling", "Twinkling", "Glistening", "Shimmering",
+    "Glittering", "Effervescent", "Phosphorescent", "Incandescent",
+    "Resplendent", "Scintillating", "Coruscating", "Effulgent",
+    "Refulgent", "Luminescent", "Iridescent", "Prismatic",
+    "Ethereal", "Celestial", "Divine", "Transcendent",
+    "Luminous", "Glowing", "Radiant", "Shining",
+    "Beaming", "Glaring", "Dazzling", "Intense",
+    "Burning", "Flashing", "Sparkling", "Twinkling",
+    "Glistening", "Shimmering", "Glittering", "Effervescent",
+    "Phosphorescent", "Incandescent", "Resplendent", "Scintillating",
+    "Coruscating", "Effulgent", "Refulgent", "Luminescent",
+    "Iridescent", "Prismatic", "Ethereal", "Celestial",
+    "Divine", "Transcendent"
 ];
 
 const purityWords = [
+    // Most muted to most pure
     "Dusty", "Soft", "Mild", "Clean",
-    "Pure", "Rich", "Vivid", "Intense"
+    "Muted", "Toned", "Dulled", "Subdued",
+    "Grayed", "Ashen", "Clouded", "Misty",
+    "Hazy", "Diffused", "Diluted", "Washed",
+    "Faded", "Weathered", "Aged", "Vintage",
+    "Natural", "Organic", "Earthy", "Raw",
+    "Clear", "Fresh", "Crisp", "Sharp",
+    "Pure", "Refined", "Clarified", "Filtered",
+    "Rich", "Deep", "Concentrated", "Dense",
+    "Saturated", "Bold", "Strong", "Powerful",
+    "Vivid", "Vibrant", "Dynamic", "Energetic",
+    "Intense", "Fierce", "Forceful", "Potent",
+    "Pristine", "Immaculate", "Flawless", "Perfect",
+    "Absolute", "Ultimate", "Supreme", "Paramount",
+    "Quintessential", "Archetypal", "Ideal", "Exemplary",
+    "Purest", "Untainted", "Unsullied", "Unadulterated",
+    "Unblemished", "Unspoiled", "Unmarred", "Unimpaired",
+    "Unflawed", "Unfaulted", "Unblemished", "Unspoiled",
+    "Unmarred", "Unimpaired", "Unflawed", "Unfaulted",
+    "Unblemished", "Unspoiled", "Unmarred", "Unimpaired",
+    "Unflawed", "Unfaulted", "Unblemished", "Unspoiled",
+    "Unmarred", "Unimpaired", "Unflawed", "Unfaulted"
 ];
 
 const atmosphericWords = [
-    "Stormy", "Misty", "Cloudy", "Airy",
-    "Crystal", "Silken", "Velvet", "Gossamer"
+    // Most turbulent to most serene
+    "Stormy", "Tempestuous", "Turbulent", "Chaotic",
+    "Thunderous", "Tumultuous", "Violent", "Raging",
+    "Windswept", "Gusty", "Blustery", "Squalling",
+    "Misty", "Foggy", "Hazy", "Cloudy",
+    "Nebulous", "Vaporous", "Ethereal", "Airy",
+    "Breezy", "Flowing", "Drifting", "Floating",
+    "Wispy", "Delicate", "Gentle", "Tender",
+    "Tranquil", "Peaceful", "Serene", "Calm",
+    "Crystal", "Clear", "Pure", "Pristine",
+    "Silken", "Smooth", "Sleek", "Polished",
+    "Velvet", "Plush", "Soft", "Luxuriant",
+    "Gossamer", "Diaphanous", "Sheer", "Translucent",
+    "Luminous", "Radiant", "Glowing", "Effervescent",
+    "Harmonious", "Balanced", "Composed", "Refined",
+    "Celestial", "Heavenly", "Divine", "Sublime",
+    "Transcendent", "Ethereal", "Mystic", "Enchanted",
+    "Dreamy", "Ethereal", "Imaginary", "Fantastical",
+    "Fanciful", "Whimsical", "Quaint", "Picturesque",
+    "Scenic", "Panoramic", "Spectacular", "Resplendent",
+    "Glorious", "Triumphant", "Exultant", "Jubilant",
+    "Euphoric", "Elated", "Elevated", "Exalted",
+    "Sublime", "Transcendent", "Ethereal", "Mystic",
+    "Enchanted", "Dreamy", "Imaginary", "Fantastical",
+    "Fanciful", "Whimsical", "Quaint", "Picturesque",
+    "Scenic", "Panoramic", "Spectacular", "Resplendent",
+    "Glorious", "Triumphant", "Exultant", "Jubilant",
+    "Euphoric", "Elated", "Elevated", "Exalted"
 ];
+
+const COLOR_OPTIONS = {
+    modifiers: {
+        luminosity: ['Dark', 'Light', 'Bright', 'Shadowed', 'Deep'],
+        purity: ['Pure', 'Rich', 'Intense', 'Vivid', 'Dusty'],
+        atmospheric: ['Crystal', 'Cloudy', 'Stormy', 'Airy', 'Silken']
+    },
+    baseColors: ['Red', 'Green', 'Blue', 'Yellow', 'Purple', 'Orange', 'Pink', 'Brown', 'Gray', 'Black', 'White', 'Cyan', 'Magenta']
+};
 
 // Utility functions
 function hexToRgb(hex) {
@@ -65,6 +144,7 @@ function getMsbIndex(rgb) {
 }
 
 function getRemainingBits(rgb) {
+    // Extract the lower 6 bits from each component
     return {
         r: rgb.r & 0x3F,
         g: rgb.g & 0x3F,
@@ -138,121 +218,55 @@ function hsvToRgb(h, s, v) {
     };
 }
 
-function getModifierIndices(hsb) {
+function getModifierIndices(rgb) {
+    // Get the remaining 6 bits from each color component
+    const bits = getRemainingBits(rgb);
+    
+    // Use 2 bits from each component for each modifier
     return {
-        luminosity: Math.floor(hsb.v / 100 * 7),
-        purity: Math.floor(hsb.s / 100 * 7),
-        atmospheric: Math.floor(hsb.h / 360 * 7)
+        // Combine RG bits for luminosity (0-63)
+        luminosity: (bits.r & 0x3F),
+        // Combine GB bits for purity (0-63)
+        purity: (bits.g & 0x3F),
+        // Combine BR bits for atmospheric (0-63)
+        atmospheric: (bits.b & 0x3F)
     };
 }
 
 function getColorName(hex) {
     const rgb = hexToRgb(hex);
     const baseColorIndex = getMsbIndex(rgb);
-    const remaining = getRemainingBits(rgb);
-    const hsb = rgbToHsv(remaining.r, remaining.g, remaining.b);
-    const modifiers = getModifierIndices(hsb);
+    const modifiers = getModifierIndices(rgb);
     
     return `${luminosityWords[modifiers.luminosity]} ${purityWords[modifiers.purity]} ${atmosphericWords[modifiers.atmospheric]} ${baseColors[baseColorIndex]}`;
-}
-
-function makeNameEditable(element, isMainColor = false) {
-    element.contentEditable = true;
-    element.spellcheck = false;
-    element.classList.add('editable');
-    
-    element.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            element.blur();
-        }
-    });
-
-    element.addEventListener('blur', function() {
-        const newName = element.textContent.trim();
-        const color = getColorFromName(newName);
-        
-        if (color) {
-            if (isMainColor) {
-                updateUrlColor(color);
-                displayColor(color);
-            } else {
-                // Find the parent variation card and update it
-                const card = element.closest('.variation-card');
-                const colorBox = card.querySelector('.variation-color');
-                const hexElement = card.querySelector('.variation-hex');
-                colorBox.style.backgroundColor = color;
-                hexElement.textContent = color;
-            }
-        } else {
-            // Revert to original name if color not found
-            element.textContent = element.dataset.originalName;
-        }
-    });
 }
 
 function getColorFromName(name) {
     // Split the name into parts
     const parts = name.split(' ');
+    if (parts.length !== 4) return null;
+
+    // Find indices for each modifier
+    const luminosityIndex = luminosityWords.indexOf(parts[0]);
+    const purityIndex = purityWords.indexOf(parts[1]);
+    const atmosphericIndex = atmosphericWords.indexOf(parts[2]);
+    const baseColorIndex = baseColors.indexOf(parts[3]);
+
+    if (luminosityIndex === -1 || purityIndex === -1 || 
+        atmosphericIndex === -1 || baseColorIndex === -1) {
+        return null;
+    }
+
+    // Get base color RGB
+    const baseRgb = hexToRgb(baseColors[baseColorIndex]);
     
-    // Base colors and their hex values
-    const baseColors = {
-        'Red': '#FF0000',
-        'Green': '#00FF00',
-        'Blue': '#0000FF',
-        'Yellow': '#FFFF00',
-        'Purple': '#800080',
-        'Orange': '#FFA500',
-        'Pink': '#FFC0CB',
-        'Brown': '#A52A2A',
-        'Gray': '#808080',
-        'Black': '#000000',
-        'White': '#FFFFFF',
-        'Cyan': '#00FFFF',
-        'Magenta': '#FF00FF'
-    };
+    // Create new RGB values using the modifier indices
+    // We'll use the top 2 bits for the base color and the remaining 6 bits for modifiers
+    const r = (baseRgb.r & 0xC0) | (luminosityIndex & 0x3F);
+    const g = (baseRgb.g & 0xC0) | (purityIndex & 0x3F);
+    const b = (baseRgb.b & 0xC0) | (atmosphericIndex & 0x3F);
 
-    // Find the base color (last word)
-    const baseColor = parts[parts.length - 1];
-    if (!baseColors[baseColor]) return null;
-
-    // Convert base color to HSV
-    const rgb = hexToRgb(baseColors[baseColor]);
-    let hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-
-    // Apply modifiers
-    parts.slice(0, -1).forEach(modifier => {
-        switch(modifier.toLowerCase()) {
-            case 'dark':
-                hsv.v = Math.max(hsv.v * 0.7, 0);
-                break;
-            case 'light':
-                hsv.v = Math.min(hsv.v * 1.3, 100);
-                break;
-            case 'deep':
-                hsv.s = Math.min(hsv.s * 1.2, 100);
-                hsv.v = Math.max(hsv.v * 0.8, 0);
-                break;
-            case 'pale':
-                hsv.s = Math.max(hsv.s * 0.7, 0);
-                hsv.v = Math.min(hsv.v * 1.1, 100);
-                break;
-            case 'bright':
-                hsv.v = Math.min(hsv.v * 1.2, 100);
-                break;
-            case 'pure':
-                hsv.s = Math.min(hsv.s * 1.1, 100);
-                break;
-            case 'rich':
-                hsv.s = Math.min(hsv.s * 1.15, 100);
-                hsv.v = Math.min(hsv.v * 1.05, 100);
-                break;
-        }
-    });
-
-    // Convert back to hex
-    const newRgb = hsvToRgb(hsv.h, hsv.s, hsv.v);
-    return rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+    return rgbToHex(r, g, b);
 }
 
 // Browser-specific code
@@ -276,7 +290,7 @@ if (typeof window !== 'undefined') {
         const colorNameElement = document.getElementById('colorName');
         colorNameElement.textContent = name;
         colorNameElement.dataset.originalName = name;
-        makeNameEditable(colorNameElement, true);
+        createNameEditor(colorNameElement, true);
         document.getElementById('hexCode').textContent = hex;
         
         generateVariations(rgb);
@@ -352,20 +366,24 @@ if (typeof window !== 'undefined') {
             const info = document.createElement('div');
             info.className = 'variation-info';
             
+            const nameContainer = document.createElement('div');
+            nameContainer.className = 'name-container';
+            
             const name = document.createElement('div');
             name.className = 'variation-name';
             name.textContent = variation.name;
-            name.dataset.originalName = variation.name;
-            makeNameEditable(name);
+            nameContainer.appendChild(name);
             
             const hex = document.createElement('div');
             hex.className = 'variation-hex';
             hex.textContent = variation.hex;
             
-            info.appendChild(name);
+            info.appendChild(nameContainer);
             info.appendChild(hex);
             card.appendChild(colorBox);
             card.appendChild(info);
+            
+            createNameEditor(name, false);
             variationsContainer.appendChild(card);
         });
     }
@@ -415,4 +433,113 @@ if (typeof module !== 'undefined' && module.exports) {
         purityWords,
         atmosphericWords
     };
+}
+
+function createNameEditor(nameElement, isMainColor = false) {
+    const nameContainer = nameElement.parentElement;
+    if (!nameContainer) return;
+
+    // Create edit button
+    const editButton = document.createElement('button');
+    editButton.className = 'edit-button';
+    editButton.innerHTML = '&#9998;';
+    nameContainer.appendChild(editButton);
+
+    // Create editor container
+    const editorContainer = document.createElement('div');
+    editorContainer.className = 'name-editor';
+    editorContainer.style.display = 'none';
+
+    // Create dropdowns for each part
+    const luminositySelect = createSelect('Luminosity', luminosityWords);
+    const puritySelect = createSelect('Purity', purityWords);
+    const atmosphericSelect = createSelect('Atmospheric', atmosphericWords);
+    const baseColorSelect = createSelect('Base Color', baseColors);
+
+    // Create apply button
+    const applyButton = document.createElement('button');
+    applyButton.className = 'apply-button';
+    applyButton.textContent = 'Apply';
+
+    // Create cancel button
+    const cancelButton = document.createElement('button');
+    cancelButton.className = 'cancel-button';
+    cancelButton.textContent = 'Cancel';
+
+    // Add all elements to container
+    editorContainer.appendChild(luminositySelect);
+    editorContainer.appendChild(puritySelect);
+    editorContainer.appendChild(atmosphericSelect);
+    editorContainer.appendChild(baseColorSelect);
+    editorContainer.appendChild(applyButton);
+    editorContainer.appendChild(cancelButton);
+    nameContainer.appendChild(editorContainer);
+
+    // Set initial values based on current name
+    function setInitialValues() {
+        const parts = nameElement.textContent.split(' ');
+        if (parts.length === 4) {
+            luminositySelect.querySelector('select').value = parts[0];
+            puritySelect.querySelector('select').value = parts[1];
+            atmosphericSelect.querySelector('select').value = parts[2];
+            baseColorSelect.querySelector('select').value = parts[3];
+        }
+    }
+
+    // Event Handlers
+    editButton.addEventListener('click', () => {
+        nameElement.style.display = 'none';
+        editButton.style.display = 'none';
+        editorContainer.style.display = 'flex';
+        setInitialValues();
+    });
+
+    applyButton.addEventListener('click', () => {
+        const newName = `${luminositySelect.querySelector('select').value} ${puritySelect.querySelector('select').value} ${atmosphericSelect.querySelector('select').value} ${baseColorSelect.querySelector('select').value}`;
+        const color = getColorFromName(newName);
+        
+        if (color) {
+            if (isMainColor) {
+                updateUrlColor(color);
+                displayColor(color);
+            } else {
+                const card = nameContainer.closest('.variation-card');
+                const colorBox = card.querySelector('.variation-color');
+                const hexElement = card.querySelector('.variation-hex');
+                colorBox.style.backgroundColor = color;
+                hexElement.textContent = color;
+                nameElement.textContent = newName;
+            }
+        }
+        
+        nameElement.style.display = 'block';
+        editButton.style.display = 'inline';
+        editorContainer.style.display = 'none';
+    });
+
+    cancelButton.addEventListener('click', () => {
+        nameElement.style.display = 'block';
+        editButton.style.display = 'inline';
+        editorContainer.style.display = 'none';
+    });
+}
+
+function createSelect(label, options) {
+    const container = document.createElement('div');
+    container.className = 'select-container';
+    
+    const labelElement = document.createElement('label');
+    labelElement.textContent = label;
+    
+    const select = document.createElement('select');
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        select.appendChild(optionElement);
+    });
+    
+    container.appendChild(labelElement);
+    container.appendChild(select);
+    return container;
 }

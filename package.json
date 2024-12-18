@@ -2,13 +2,27 @@
   "name": "every-color-ever",
   "version": "1.0.0",
   "description": "A color name generator with tests",
-  "main": "script.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "http-server",
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "serve": "http-server",
+    "dev": "npm run build && npm start"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
   },
   "devDependencies": {
     "@babel/preset-env": "^7.26.0",
-    "jest": "^29.7.0"
+    "http-server": "^14.1.1",
+    "jest": "^29.7.0",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4"
   },
   "keywords": [],
   "author": "",

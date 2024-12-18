@@ -1,0 +1,104 @@
+// Utility functions
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
+function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(x => {
+        const hex = x.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    }).join('');
+}
+
+function getMsbIndex(rgb) {
+    const rBits = (rgb.r >> 6) & 0x03;
+    const gBits = (rgb.g >> 6) & 0x03;
+    const bBits = (rgb.b >> 6) & 0x03;
+    return (bBits << 4) | (rBits << 2) | gBits;
+}
+
+function getRemainingBits(rgb) {
+    // Extract the lower 6 bits from each component
+    return {
+        r: rgb.r & 0x3F,
+        g: rgb.g & 0x3F,
+        b: rgb.b & 0x3F
+    };
+}
+
+function rgbToHsv(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const diff = max - min;
+    
+    let h = 0;
+    const s = max === 0 ? 0 : diff / max;
+    const v = max;
+
+    if (diff !== 0) {
+        switch (max) {
+            case r:
+                h = (g - b) / diff + (g < b ? 6 : 0);
+                break;
+            case g:
+                h = (b - r) / diff + 2;
+                break;
+            case b:
+                h = (r - g) / diff + 4;
+                break;
+        }
+        h /= 6;
+    }
+
+    return {
+        h: h * 360,
+        s: s * 100,
+        v: v * 100
+    };
+}
+
+function hsvToRgb(h, s, v) {
+    h /= 360;
+    s /= 100;
+    v /= 100;
+
+    const i = Math.floor(h * 6);
+    const f = h * 6 - i;
+    const p = v * (1 - s);
+    const q = v * (1 - f * s);
+    const t = v * (1 - (1 - f) * s);
+
+    let r, g, b;
+    switch (i % 6) {
+        case 0: r = v; g = t; b = p; break;
+        case 1: r = q; g = v; b = p; break;
+        case 2: r = p; g = v; b = t; break;
+        case 3: r = p; g = q; b = v; break;
+        case 4: r = t; g = p; b = v; break;
+        case 5: r = v; g = p; b = q; break;
+    }
+
+    return {
+        r: Math.round(r * 255),
+        g: Math.round(g * 255),
+        b: Math.round(b * 255)
+    };
+}
+
+module.exports = {
+    hexToRgb,
+    rgbToHex,
+    getMsbIndex,
+    getRemainingBits,
+    rgbToHsv,
+    hsvToRgb
+};

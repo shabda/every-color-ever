@@ -159,46 +159,72 @@ function getColorName(hex) {
 // Browser-specific code
 if (typeof window !== 'undefined') {
     function generateNewColor() {
-        const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+        const r = Math.floor(Math.random() * 256);
+        const g = Math.floor(Math.random() * 256);
+        const b = Math.floor(Math.random() * 256);
+        
+        const hex = rgbToHex(r, g, b);
+        const name = getColorName(hex);
+        
         document.getElementById('mainColor').style.backgroundColor = hex;
-        document.getElementById('colorName').textContent = getColorName(hex);
+        document.getElementById('colorName').textContent = name;
         document.getElementById('hexCode').textContent = hex;
         
-        const variations = generateVariations(hex);
-        updateVariationsDisplay(variations);
+        generateVariations({r, g, b});
     }
 
-    function generateVariations(hex) {
-        const rgb = hexToRgb(hex);
-        const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-        const variations = {
-            brightness: [],
-            color: [],
-            saturation: []
-        };
+    function generateVariations(mainColor) {
+        const variationsContainer = document.getElementById('variationsGrid');
+        variationsContainer.innerHTML = '';
 
-        // Brightness variations
-        for(let i = 0; i < 4; i++) {
-            const newV = Math.min(100, (hsv.v * (0.4 + (i * 0.2))));
-            const newRgb = hsvToRgb(hsv.h, hsv.s, newV);
-            variations.brightness.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+        // Generate 20 variations (5x4 grid)
+        const variations = [];
+        const hsv = rgbToHsv(mainColor.r, mainColor.g, mainColor.b);
+
+        // Create variations with different hue, saturation, and value combinations
+        for (let i = 0; i < 20; i++) {
+            const hueShift = (i % 4) * 30 - 45;  // Shifts between -45 and +45 degrees
+            const saturationMod = 1 - (Math.floor(i / 4) * 0.2);  // Decreases saturation by row
+            const valueMod = 0.5 + (Math.floor(i / 8) * 0.25);  // Adjusts value every two rows
+
+            const newHue = (hsv.h + hueShift + 360) % 360;
+            const newSaturation = Math.max(0, Math.min(100, hsv.s * saturationMod));
+            const newValue = Math.max(0, Math.min(100, hsv.v * valueMod));
+
+            const rgb = hsvToRgb(newHue, newSaturation, newValue);
+            const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+            variations.push({
+                hex: hex,
+                name: getColorName(hex)
+            });
         }
 
-        // Color variations
-        for(let i = 0; i < 4; i++) {
-            const newH = (hsv.h + (i * 30)) % 360;
-            const newRgb = hsvToRgb(newH, hsv.s, hsv.v);
-            variations.color.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
-        }
-
-        // Saturation variations
-        for(let i = 0; i < 4; i++) {
-            const newS = Math.min(100, hsv.s * (0.25 + (i * 0.25)));
-            const newRgb = hsvToRgb(hsv.h, newS, hsv.v);
-            variations.saturation.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
-        }
-
-        return variations;
+        // Display variations
+        variations.forEach(variation => {
+            const card = document.createElement('div');
+            card.className = 'variation-card';
+            
+            const colorBox = document.createElement('div');
+            colorBox.className = 'variation-color';
+            colorBox.style.backgroundColor = variation.hex;
+            
+            const info = document.createElement('div');
+            info.className = 'variation-info';
+            
+            const name = document.createElement('div');
+            name.className = 'variation-name';
+            name.textContent = variation.name;
+            
+            const hex = document.createElement('div');
+            hex.className = 'variation-hex';
+            hex.textContent = variation.hex;
+            
+            info.appendChild(name);
+            info.appendChild(hex);
+            card.appendChild(colorBox);
+            card.appendChild(info);
+            variationsContainer.appendChild(card);
+        });
     }
 
     function updateVariationsDisplay(variations) {

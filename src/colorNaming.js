@@ -1,5 +1,5 @@
 const { baseColors, luminosityWords, purityWords, atmosphericWords } = require('./colorData');
-const { hexToRgb, getMsbIndex, getRemainingBits } = require('./colorUtils');
+const { hexToRgb, getMsbIndex, getRemainingBits, reconstructRgb } = require('./colorUtils');
 
 function getModifierIndices(rgb) {
     // Get the remaining 6 bits from each color component
@@ -16,19 +16,33 @@ function getModifierIndices(rgb) {
     };
 }
 
-function getColorName(input) {
+function getColorName(hex) {
     // Handle both hex string and RGB object
-    const rgb = typeof input === 'string' ? hexToRgb(input) : input;
+    const rgb = typeof hex === 'string' ? hexToRgb(hex) : hex;
     
     if (!rgb || typeof rgb.r !== 'number' || typeof rgb.g !== 'number' || typeof rgb.b !== 'number') {
-        console.error('Invalid color input:', input);
+        console.error('Invalid color input:', hex);
         return 'Unknown Color';
     }
 
-    const baseColorIndex = getMsbIndex(rgb);
-    const modifiers = getModifierIndices(rgb);
-    
-    return `${luminosityWords[modifiers.luminosity]} ${purityWords[modifiers.purity]} ${atmosphericWords[modifiers.atmospheric]} ${baseColors[baseColorIndex]}`;
+    const msbIndex = getMsbIndex(rgb);
+    const remainingBits = getRemainingBits(rgb);
+
+    // Get the base color from the MSB index
+    const baseColor = baseColors[msbIndex];
+
+    // Map the remaining bits to modifiers
+    // We'll use the bits to index into our modifier arrays
+    const luminosityIndex = remainingBits.r;
+    const purityIndex = remainingBits.g;
+    const atmosphericIndex = remainingBits.b;
+
+    // Ensure we don't exceed array bounds
+    const luminosity = luminosityWords[luminosityIndex % luminosityWords.length];
+    const purity = purityWords[purityIndex % purityWords.length];
+    const atmospheric = atmosphericWords[atmosphericIndex % atmosphericWords.length];
+
+    return `${luminosity} ${purity} ${atmospheric} ${baseColor}`;
 }
 
 function nameToRgb(colorName) {
@@ -47,17 +61,12 @@ function nameToRgb(colorName) {
         throw new Error('One or more words not found in the color vocabulary');
     }
 
-    // Extract the MSBs from the base color index
-    const bBits = (baseColorIndex >> 4) & 0x03;  // Top 2 bits
-    const rBits = (baseColorIndex >> 2) & 0x03;  // Middle 2 bits
-    const gBits = baseColorIndex & 0x03;         // Bottom 2 bits
-
-    // Combine with the modifier bits
-    return {
-        r: (rBits << 6) | (luminosityIndex & 0x3F),
-        g: (gBits << 6) | (purityIndex & 0x3F),
-        b: (bBits << 6) | (atmosphericIndex & 0x3F)
-    };
+    // Reconstruct the RGB values using our utility function
+    return reconstructRgb(baseColorIndex, {
+        r: luminosityIndex,
+        g: purityIndex,
+        b: atmosphericIndex
+    });
 }
 
 module.exports = {

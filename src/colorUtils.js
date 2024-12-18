@@ -16,18 +16,33 @@ function rgbToHex(r, g, b) {
 }
 
 function getMsbIndex(rgb) {
-    const rBits = (rgb.r >> 6) & 0x03;
-    const gBits = (rgb.g >> 6) & 0x03;
-    const bBits = (rgb.b >> 6) & 0x03;
-    return (bBits << 4) | (rBits << 2) | gBits;
+    // We'll use the high bits to determine the base color region
+    const rHigh = (rgb.r >> 6) & 0x03;
+    const gHigh = (rgb.g >> 6) & 0x03;
+    const bHigh = (rgb.b >> 6) & 0x03;
+    return (bHigh << 4) | (rHigh << 2) | gHigh;
 }
 
 function getRemainingBits(rgb) {
-    // Extract the lower 6 bits from each component
+    // Store the exact lower 6 bits for each component
     return {
         r: rgb.r & 0x3F,
         g: rgb.g & 0x3F,
         b: rgb.b & 0x3F
+    };
+}
+
+function reconstructRgb(msbIndex, remainingBits) {
+    // Extract the high bits from msbIndex
+    const bHigh = (msbIndex >> 4) & 0x03;
+    const rHigh = (msbIndex >> 2) & 0x03;
+    const gHigh = msbIndex & 0x03;
+
+    // Combine with the remaining bits
+    return {
+        r: (rHigh << 6) | remainingBits.r,
+        g: (gHigh << 6) | remainingBits.g,
+        b: (bHigh << 6) | remainingBits.b
     };
 }
 
@@ -105,6 +120,7 @@ module.exports = {
     rgbToHex,
     getMsbIndex,
     getRemainingBits,
+    reconstructRgb,
     rgbToHsv,
     hsvToRgb
 };

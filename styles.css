@@ -130,6 +130,13 @@ button:hover {
     margin-top: 4px;
 }
 
+.variation-label {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 4px;
+    font-style: italic;
+}
+
 #color-picker {
     width: 44px;
     height: 44px;

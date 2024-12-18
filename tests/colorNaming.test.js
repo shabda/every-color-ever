@@ -1,4 +1,4 @@
-const { getColorName } = require('../src');
+const { getColorName, nameToRgb } = require('../src');
 
 function rgbToHex(r, g, b) {
     const hex = [r, g, b].map(x => {
@@ -102,5 +102,21 @@ describe('Color Name Uniqueness', () => {
         console.log(`Tested ${colors.size} unique colors`);
         console.log(`Got ${names.size} unique names`);
         console.log(`Collision rate: ${((1 - names.size / colors.size) * 100).toFixed(2)}%`);
+    });
+
+    test('nameToRgb correctly converts color names back to RGB', () => {
+        const testCases = [
+            { name: 'Twilight Ashen Effervescent Light Blue', hex: '#0f8df3' },
+            { name: 'Obscured Potent Soft Near White', hex: '#cbf3aa' }
+        ];
+
+        testCases.forEach(({ name, hex }) => {
+            const rgb = nameToRgb(name);
+            const actualHex = rgbToHex(rgb.r, rgb.g, rgb.b);
+            expect(actualHex.toLowerCase()).toBe(hex.toLowerCase());
+            
+            // Verify bijective property - converting back should give the same name
+            expect(getColorName(rgb)).toBe(name);
+        });
     });
 });

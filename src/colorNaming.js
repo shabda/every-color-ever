@@ -31,7 +31,37 @@ function getColorName(input) {
     return `${luminosityWords[modifiers.luminosity]} ${purityWords[modifiers.purity]} ${atmosphericWords[modifiers.atmospheric]} ${baseColors[baseColorIndex]}`;
 }
 
+function nameToRgb(colorName) {
+    // Split the color name into words and handle multi-word base colors
+    const words = colorName.split(' ');
+    const baseColorWords = words.slice(3).join(' '); // Join all remaining words for base color
+    const [luminosity, purity, atmospheric] = words;
+
+    // Find indices in our word arrays
+    const luminosityIndex = luminosityWords.indexOf(luminosity);
+    const purityIndex = purityWords.indexOf(purity);
+    const atmosphericIndex = atmosphericWords.indexOf(atmospheric);
+    const baseColorIndex = baseColors.indexOf(baseColorWords);
+
+    if (luminosityIndex === -1 || purityIndex === -1 || atmosphericIndex === -1 || baseColorIndex === -1) {
+        throw new Error('One or more words not found in the color vocabulary');
+    }
+
+    // Extract the MSBs from the base color index
+    const bBits = (baseColorIndex >> 4) & 0x03;  // Top 2 bits
+    const rBits = (baseColorIndex >> 2) & 0x03;  // Middle 2 bits
+    const gBits = baseColorIndex & 0x03;         // Bottom 2 bits
+
+    // Combine with the modifier bits
+    return {
+        r: (rBits << 6) | (luminosityIndex & 0x3F),
+        g: (gBits << 6) | (purityIndex & 0x3F),
+        b: (bBits << 6) | (atmosphericIndex & 0x3F)
+    };
+}
+
 module.exports = {
     getModifierIndices,
-    getColorName
+    getColorName,
+    nameToRgb
 };

@@ -1,3 +1,45 @@
+   // Base color lists
+   const baseColors = [
+    // B = 00
+    "Black", "Deep Green", "Green", "Bright Green",
+    "Brown", "Olive", "Yellow Green", "Lime",
+    "Red", "Rust", "Orange", "Yellow",
+    "Dark Red", "Red Brown", "Bright Orange", "Bright Yellow",
+    
+    // B = 01
+    "Navy", "Teal", "Sea Green", "Spring Green",
+    "Deep Purple", "Gray Green", "Sage", "Light Green",
+    "Deep Rose", "Mauve", "Tan", "Khaki",
+    "Wine", "Rose Brown", "Peach", "Light Yellow",
+    
+    // B = 10
+    "Blue", "Blue Green", "Turquoise", "Aqua",
+    "Purple", "Blue Gray", "Pale Green", "Light Cyan",
+    "Magenta", "Purple Pink", "Pink Orange", "Pale Yellow",
+    "Deep Pink", "Rose Pink", "Light Orange", "Near White",
+    
+    // B = 11
+    "Royal Blue", "Sky Blue", "Light Blue", "Pale Blue",
+    "Violet", "Lavender", "Pale Turquoise", "Ice Blue",
+    "Bright Purple", "Light Purple", "Light Pink", "Pearl",
+    "Hot Pink", "Baby Pink", "Pale Orange", "White"
+];
+
+const luminosityWords = [
+    "Shadowed", "Dark", "Deep", "Muted", 
+    "Clear", "Bright", "Brilliant", "Radiant"
+];
+
+const purityWords = [
+    "Dusty", "Soft", "Mild", "Clean",
+    "Pure", "Rich", "Vivid", "Intense"
+];
+
+const atmosphericWords = [
+    "Stormy", "Misty", "Cloudy", "Airy",
+    "Crystal", "Silken", "Velvet", "Gossamer"
+];
+
 // Utility functions
 function hexToRgb(hex) {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -9,18 +51,17 @@ function hexToRgb(hex) {
 }
 
 function rgbToHex(r, g, b) {
-    const toHex = x => {
+    return '#' + [r, g, b].map(x => {
         const hex = x.toString(16);
         return hex.length === 1 ? '0' + hex : hex;
-    };
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }).join('');
 }
 
 function getMsbIndex(rgb) {
-    const r = (rgb.r >> 6) & 0x03;
-    const g = (rgb.g >> 6) & 0x03;
-    const b = (rgb.b >> 6) & 0x03;
-    return (r << 4) | (g << 2) | b;
+    const rBits = (rgb.r >> 6) & 0x03;
+    const gBits = (rgb.g >> 6) & 0x03;
+    const bBits = (rgb.b >> 6) & 0x03;
+    return (bBits << 4) | (rBits << 2) | gBits;
 }
 
 function getRemainingBits(rgb) {
@@ -39,7 +80,7 @@ function rgbToHsv(r, g, b) {
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     const d = max - min;
-
+    
     let h;
     const s = max === 0 ? 0 : d / max;
     const v = max;
@@ -61,11 +102,20 @@ function rgbToHsv(r, g, b) {
         h /= 6;
     }
 
-    return { h, s, v };
+    return {
+        h: h * 360,
+        s: s * 100,
+        v: v * 100
+    };
 }
 
 function hsvToRgb(h, s, v) {
+    h = h / 360;
+    s = s / 100;
+    v = v / 100;
+    
     let r, g, b;
+
     const i = Math.floor(h * 6);
     const f = h * 6 - i;
     const p = v * (1 - s);
@@ -90,88 +140,89 @@ function hsvToRgb(h, s, v) {
 
 function getModifierIndices(hsb) {
     return {
-        luminosity: Math.floor(hsb.v * 4),
-        purity: Math.floor(hsb.s * 4),
-        atmospheric: Math.floor(hsb.h * 12)
+        luminosity: Math.floor(hsb.v / 100 * 7),
+        purity: Math.floor(hsb.s / 100 * 7),
+        atmospheric: Math.floor(hsb.h / 360 * 7)
     };
 }
 
 function getColorName(hex) {
     const rgb = hexToRgb(hex);
-    const msbIndex = getMsbIndex(rgb);
+    const baseColorIndex = getMsbIndex(rgb);
     const remaining = getRemainingBits(rgb);
-    const hsv = rgbToHsv(remaining.r, remaining.g, remaining.b);
-    const modifiers = getModifierIndices(hsv);
+    const hsb = rgbToHsv(remaining.r, remaining.g, remaining.b);
+    const modifiers = getModifierIndices(hsb);
     
-    return `${baseColors[msbIndex]}`;
+    return `${luminosityWords[modifiers.luminosity]} ${purityWords[modifiers.purity]} ${atmosphericWords[modifiers.atmospheric]} ${baseColors[baseColorIndex]}`;
 }
 
 function generateVariations(hex) {
     const rgb = hexToRgb(hex);
     const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-    const variations = [];
+    const variations = {
+        brightness: [],
+        color: [],
+        saturation: []
+    };
 
-    // Generate brightness variations
-    for (let i = -2; i <= 1; i++) {
-        const newV = Math.max(0, Math.min(1, hsv.v + (i * 0.2)));
+    // Brightness variations
+    for(let i = 0; i < 4; i++) {
+        const newV = Math.min(100, (hsv.v * (0.4 + (i * 0.2))));
         const newRgb = hsvToRgb(hsv.h, hsv.s, newV);
-        variations.push({
-            hex: rgbToHex(newRgb.r, newRgb.g, newRgb.b),
-            name: `Brightness ${i > 0 ? '+' : ''}${i}`
-        });
+        variations.brightness.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
     }
 
-    // Generate hue variations
-    for (let i = -2; i <= 1; i++) {
-        const newH = (hsv.h + (i * 0.1) + 1) % 1;
+    // Color variations
+    for(let i = 0; i < 4; i++) {
+        const newH = (hsv.h + (i * 30)) % 360;
         const newRgb = hsvToRgb(newH, hsv.s, hsv.v);
-        variations.push({
-            hex: rgbToHex(newRgb.r, newRgb.g, newRgb.b),
-            name: `Hue ${i > 0 ? '+' : ''}${i}`
-        });
+        variations.color.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+    }
+
+    // Saturation variations
+    for(let i = 0; i < 4; i++) {
+        const newS = Math.min(100, hsv.s * (0.25 + (i * 0.25)));
+        const newRgb = hsvToRgb(hsv.h, newS, hsv.v);
+        variations.saturation.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
     }
 
     return variations;
 }
 
 function updateVariationsDisplay(variations) {
-    const container = document.querySelector('.variations');
+    const container = document.getElementById('variations');
     container.innerHTML = '';
 
-    variations.forEach(variation => {
-        const card = document.createElement('div');
-        card.className = 'variation-card';
-        
-        const box = document.createElement('div');
-        box.className = 'variation-box';
-        box.style.backgroundColor = variation.hex;
-        
-        const name = document.createElement('div');
-        name.className = 'variation-name';
-        name.textContent = variation.name;
-        
-        const hex = document.createElement('div');
-        hex.className = 'variation-hex';
-        hex.textContent = variation.hex;
-        
-        card.appendChild(box);
-        card.appendChild(name);
-        card.appendChild(hex);
-        container.appendChild(card);
+    ['brightness', 'color', 'saturation'].forEach((type) => {
+        const label = document.createElement('div');
+        label.className = 'row-label';
+        label.textContent = type.charAt(0).toUpperCase() + type.slice(1) + ' Variations';
+        container.appendChild(label);
+
+        variations[type].forEach(hex => {
+            const card = document.createElement('div');
+            card.className = 'variation-card';
+            const name = getColorName(hex);
+            
+            card.innerHTML = `
+                <div class="variation-box" style="background-color: ${hex}"></div>
+                <div class="variation-name">${name}</div>
+                <div class="variation-hex">${hex}</div>
+            `;
+            container.appendChild(card);
+        });
     });
 }
 
 function generateNewColor() {
-    const r = Math.floor(Math.random() * 256);
-    const g = Math.floor(Math.random() * 256);
-    const b = Math.floor(Math.random() * 256);
-    const hex = rgbToHex(r, g, b);
+    const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+    document.getElementById('mainColor').style.backgroundColor = hex;
+    document.getElementById('colorName').textContent = getColorName(hex);
+    document.getElementById('hexCode').textContent = hex;
     
-    document.querySelector('.color-box').style.backgroundColor = hex;
-    document.querySelector('.hex-code').textContent = hex;
-    document.querySelector('.color-name').textContent = getColorName(hex);
-    updateVariationsDisplay(generateVariations(hex));
+    const variations = generateVariations(hex);
+    updateVariationsDisplay(variations);
 }
 
 // Initialize with a random color on load
-window.addEventListener('DOMContentLoaded', generateNewColor);
+generateNewColor();

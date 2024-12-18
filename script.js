@@ -26,13 +26,13 @@ const baseColors = [
 ];
 
 const luminosityWords = [
-    // Darkest to Brightest
-    "Shadowed", "Dark", "Deep", "Muted",
-    "Dim", "Dusky", "Faded", "Subdued",
-    "Darkened", "Shaded", "Twilight", "Tenebrous",
-    "Obscured", "Somber", "Gloomy", "Murky",
-    "Veiled", "Hazy", "Overcast", "Subtle",
-    "Neutral", "Balanced", "Moderate", "Medium",
+    // Darkest (0) to Brightest (63)
+    "Abyssal", "Shadowed", "Dark", "Dim",
+    "Dusky", "Murky", "Gloomy", "Shaded",
+    "Muted", "Subdued", "Veiled", "Obscured",
+    "Clouded", "Somber", "Tenebrous", "Twilight",
+    "Overcast", "Darkened", "Faded", "Subtle",
+    "Neutral", "Moderate", "Balanced", "Medium",
     "Clear", "Lucid", "Luminous", "Glowing",
     "Light", "Bright", "Vivid", "Lustrous",
     "Gleaming", "Brilliant", "Radiant", "Blazing",
@@ -42,20 +42,13 @@ const luminosityWords = [
     "Glittering", "Effervescent", "Phosphorescent", "Incandescent",
     "Resplendent", "Scintillating", "Coruscating", "Effulgent",
     "Refulgent", "Luminescent", "Iridescent", "Prismatic",
-    "Ethereal", "Celestial", "Divine", "Transcendent",
-    "Luminous", "Glowing", "Radiant", "Shining",
-    "Beaming", "Glaring", "Dazzling", "Intense",
-    "Burning", "Flashing", "Sparkling", "Twinkling",
-    "Glistening", "Shimmering", "Glittering", "Effervescent",
-    "Phosphorescent", "Incandescent", "Resplendent", "Scintillating",
-    "Coruscating", "Effulgent", "Refulgent", "Luminescent",
-    "Iridescent", "Prismatic", "Ethereal", "Celestial",
-    "Divine", "Transcendent"
+    "Ethereal", "Celestial", "Divine", "Transcendent"
 ];
 
 const purityWords = [
-    // Most muted to most pure
-    "Dusty", "Soft", "Mild", "Clean",
+    // Most muted (0) to most pure (63)
+    "Muddy", "Dusty", "Grimy", "Soiled",
+    "Tarnished", "Stained", "Sullied", "Dingy",
     "Muted", "Toned", "Dulled", "Subdued",
     "Grayed", "Ashen", "Clouded", "Misty",
     "Hazy", "Diffused", "Diluted", "Washed",
@@ -69,19 +62,12 @@ const purityWords = [
     "Intense", "Fierce", "Forceful", "Potent",
     "Pristine", "Immaculate", "Flawless", "Perfect",
     "Absolute", "Ultimate", "Supreme", "Paramount",
-    "Quintessential", "Archetypal", "Ideal", "Exemplary",
-    "Purest", "Untainted", "Unsullied", "Unadulterated",
-    "Unblemished", "Unspoiled", "Unmarred", "Unimpaired",
-    "Unflawed", "Unfaulted", "Unblemished", "Unspoiled",
-    "Unmarred", "Unimpaired", "Unflawed", "Unfaulted",
-    "Unblemished", "Unspoiled", "Unmarred", "Unimpaired",
-    "Unflawed", "Unfaulted", "Unblemished", "Unspoiled",
-    "Unmarred", "Unimpaired", "Unflawed", "Unfaulted"
+    "Quintessential", "Archetypal", "Ideal", "Unadulterated"
 ];
 
 const atmosphericWords = [
-    // Most turbulent to most serene
-    "Stormy", "Tempestuous", "Turbulent", "Chaotic",
+    // Most turbulent (0) to most serene (63)
+    "Chaotic", "Stormy", "Tempestuous", "Turbulent",
     "Thunderous", "Tumultuous", "Violent", "Raging",
     "Windswept", "Gusty", "Blustery", "Squalling",
     "Misty", "Foggy", "Hazy", "Cloudy",
@@ -96,18 +82,7 @@ const atmosphericWords = [
     "Luminous", "Radiant", "Glowing", "Effervescent",
     "Harmonious", "Balanced", "Composed", "Refined",
     "Celestial", "Heavenly", "Divine", "Sublime",
-    "Transcendent", "Ethereal", "Mystic", "Enchanted",
-    "Dreamy", "Ethereal", "Imaginary", "Fantastical",
-    "Fanciful", "Whimsical", "Quaint", "Picturesque",
-    "Scenic", "Panoramic", "Spectacular", "Resplendent",
-    "Glorious", "Triumphant", "Exultant", "Jubilant",
-    "Euphoric", "Elated", "Elevated", "Exalted",
-    "Sublime", "Transcendent", "Ethereal", "Mystic",
-    "Enchanted", "Dreamy", "Imaginary", "Fantastical",
-    "Fanciful", "Whimsical", "Quaint", "Picturesque",
-    "Scenic", "Panoramic", "Spectacular", "Resplendent",
-    "Glorious", "Triumphant", "Exultant", "Jubilant",
-    "Euphoric", "Elated", "Elevated", "Exalted"
+    "Mystical", "Enchanted", "Magical", "Ethereal"
 ];
 
 const COLOR_OPTIONS = {

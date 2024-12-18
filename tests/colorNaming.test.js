@@ -37,6 +37,45 @@ describe('Color Name Generation', () => {
     test('generates correct name for #0000FF', () => {
         expect(getColorName('#0000FF')).toBe('Abyssal Muddy Ethereal Royal Blue');
     });
+
+    test('generates correct name for specific colors', () => {
+        const testCases = [
+            { hex: '#f3aac4', name: 'Incandescent Strong Thunderous Pale Orange' },
+            { hex: '#6861ff', name: 'Dazzling Refined Ethereal Lavender' },
+            { hex: '#ff61f8', name: 'Transcendent Refined Celestial Baby Pink' }
+        ];
+
+        // Helper function to calculate color difference
+        function colorDifference(hex1, hex2) {
+            const rgb1 = hexToRgb(hex1);
+            const rgb2 = hexToRgb(hex2);
+            const diff = Math.sqrt(
+                Math.pow(rgb1.r - rgb2.r, 2) +
+                Math.pow(rgb1.g - rgb2.g, 2) +
+                Math.pow(rgb1.b - rgb2.b, 2)
+            );
+            return diff;
+        }
+
+        testCases.forEach(({ hex, name }) => {
+            // Test forward mapping (hex to name)
+            expect(getColorName(hex)).toBe(name);
+            
+            // Test reverse mapping (name to hex) with tolerance
+            const rgb = nameToRgb(name);
+            const resultHex = rgbToHex(rgb.r, rgb.g, rgb.b);
+            const difference = colorDifference(hex, resultHex);
+            
+            // Allow for small differences due to bit masking
+            // A difference of 48 means each channel can be off by about 16 values
+            expect(difference).toBeLessThan(48);
+            
+            // Log the actual differences for debugging
+            console.log(`Color difference for ${name}: ${difference}`);
+            console.log(`  Original: ${hex}`);
+            console.log(`  Result:   ${resultHex}`);
+        });
+    });
 });
 
 describe('Color Name Uniqueness', () => {

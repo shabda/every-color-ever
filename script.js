@@ -156,22 +156,163 @@ function getColorName(hex) {
     return `${luminosityWords[modifiers.luminosity]} ${purityWords[modifiers.purity]} ${atmosphericWords[modifiers.atmospheric]} ${baseColors[baseColorIndex]}`;
 }
 
+function makeNameEditable(element, isMainColor = false) {
+    element.contentEditable = true;
+    element.spellcheck = false;
+    element.classList.add('editable');
+    
+    element.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            element.blur();
+        }
+    });
+
+    element.addEventListener('blur', function() {
+        const newName = element.textContent.trim();
+        const color = getColorFromName(newName);
+        
+        if (color) {
+            if (isMainColor) {
+                updateUrlColor(color);
+                displayColor(color);
+            } else {
+                // Find the parent variation card and update it
+                const card = element.closest('.variation-card');
+                const colorBox = card.querySelector('.variation-color');
+                const hexElement = card.querySelector('.variation-hex');
+                colorBox.style.backgroundColor = color;
+                hexElement.textContent = color;
+            }
+        } else {
+            // Revert to original name if color not found
+            element.textContent = element.dataset.originalName;
+        }
+    });
+}
+
+function getColorFromName(name) {
+    // Split the name into parts
+    const parts = name.split(' ');
+    
+    // Base colors and their hex values
+    const baseColors = {
+        'Red': '#FF0000',
+        'Green': '#00FF00',
+        'Blue': '#0000FF',
+        'Yellow': '#FFFF00',
+        'Purple': '#800080',
+        'Orange': '#FFA500',
+        'Pink': '#FFC0CB',
+        'Brown': '#A52A2A',
+        'Gray': '#808080',
+        'Black': '#000000',
+        'White': '#FFFFFF',
+        'Cyan': '#00FFFF',
+        'Magenta': '#FF00FF'
+    };
+
+    // Find the base color (last word)
+    const baseColor = parts[parts.length - 1];
+    if (!baseColors[baseColor]) return null;
+
+    // Convert base color to HSV
+    const rgb = hexToRgb(baseColors[baseColor]);
+    let hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+
+    // Apply modifiers
+    parts.slice(0, -1).forEach(modifier => {
+        switch(modifier.toLowerCase()) {
+            case 'dark':
+                hsv.v = Math.max(hsv.v * 0.7, 0);
+                break;
+            case 'light':
+                hsv.v = Math.min(hsv.v * 1.3, 100);
+                break;
+            case 'deep':
+                hsv.s = Math.min(hsv.s * 1.2, 100);
+                hsv.v = Math.max(hsv.v * 0.8, 0);
+                break;
+            case 'pale':
+                hsv.s = Math.max(hsv.s * 0.7, 0);
+                hsv.v = Math.min(hsv.v * 1.1, 100);
+                break;
+            case 'bright':
+                hsv.v = Math.min(hsv.v * 1.2, 100);
+                break;
+            case 'pure':
+                hsv.s = Math.min(hsv.s * 1.1, 100);
+                break;
+            case 'rich':
+                hsv.s = Math.min(hsv.s * 1.15, 100);
+                hsv.v = Math.min(hsv.v * 1.05, 100);
+                break;
+        }
+    });
+
+    // Convert back to hex
+    const newRgb = hsvToRgb(hsv.h, hsv.s, hsv.v);
+    return rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+}
+
 // Browser-specific code
 if (typeof window !== 'undefined') {
     function generateNewColor() {
         const r = Math.floor(Math.random() * 256);
         const g = Math.floor(Math.random() * 256);
         const b = Math.floor(Math.random() * 256);
-        
         const hex = rgbToHex(r, g, b);
+        
+        // Update URL with the new color
+        updateUrlColor(hex);
+        displayColor(hex);
+    }
+
+    function displayColor(hex) {
         const name = getColorName(hex);
+        const rgb = hexToRgb(hex);
         
         document.getElementById('mainColor').style.backgroundColor = hex;
-        document.getElementById('colorName').textContent = name;
+        const colorNameElement = document.getElementById('colorName');
+        colorNameElement.textContent = name;
+        colorNameElement.dataset.originalName = name;
+        makeNameEditable(colorNameElement, true);
         document.getElementById('hexCode').textContent = hex;
         
-        generateVariations({r, g, b});
+        generateVariations(rgb);
     }
+
+    function updateUrlColor(hex) {
+        // Remove the # from hex code for the URL
+        const colorParam = hex.substring(1);
+        const newUrl = `${window.location.pathname}?color=${colorParam}`;
+        window.history.pushState({ color: hex }, '', newUrl);
+    }
+
+    function getUrlColor() {
+        const params = new URLSearchParams(window.location.search);
+        const colorParam = params.get('color');
+        return colorParam ? `#${colorParam}` : null;
+    }
+
+    // Handle browser back/forward buttons
+    window.onpopstate = function(event) {
+        if (event.state && event.state.color) {
+            displayColor(event.state.color);
+        } else {
+            generateNewColor();
+        }
+    };
+
+    // Initialize with URL color or random color
+    window.onload = function() {
+        const urlColor = getUrlColor();
+        if (urlColor && /^#[0-9A-F]{6}$/i.test(urlColor)) {
+            displayColor(urlColor);
+        } else {
+            generateNewColor();
+        }
+    };
 
     function generateVariations(mainColor) {
         const variationsContainer = document.getElementById('variationsGrid');
@@ -214,6 +355,8 @@ if (typeof window !== 'undefined') {
             const name = document.createElement('div');
             name.className = 'variation-name';
             name.textContent = variation.name;
+            name.dataset.originalName = variation.name;
+            makeNameEditable(name);
             
             const hex = document.createElement('div');
             hex.className = 'variation-hex';
@@ -253,7 +396,7 @@ if (typeof window !== 'undefined') {
     }
 
     // Initialize with a random color on load
-    generateNewColor();
+    // generateNewColor();
 }
 
 // Export functions for testing

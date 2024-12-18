@@ -1,5 +1,5 @@
    // Base color lists
-   const baseColors = [
+const baseColors = [
     // B = 00
     "Black", "Deep Green", "Green", "Bright Green",
     "Brown", "Olive", "Yellow Green", "Lime",
@@ -76,7 +76,7 @@ function rgbToHsv(r, g, b) {
     r /= 255;
     g /= 255;
     b /= 255;
-
+    
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     const d = max - min;
@@ -156,73 +156,94 @@ function getColorName(hex) {
     return `${luminosityWords[modifiers.luminosity]} ${purityWords[modifiers.purity]} ${atmosphericWords[modifiers.atmospheric]} ${baseColors[baseColorIndex]}`;
 }
 
-function generateVariations(hex) {
-    const rgb = hexToRgb(hex);
-    const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-    const variations = {
-        brightness: [],
-        color: [],
-        saturation: []
-    };
-
-    // Brightness variations
-    for(let i = 0; i < 4; i++) {
-        const newV = Math.min(100, (hsv.v * (0.4 + (i * 0.2))));
-        const newRgb = hsvToRgb(hsv.h, hsv.s, newV);
-        variations.brightness.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+// Browser-specific code
+if (typeof window !== 'undefined') {
+    function generateNewColor() {
+        const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+        document.getElementById('mainColor').style.backgroundColor = hex;
+        document.getElementById('colorName').textContent = getColorName(hex);
+        document.getElementById('hexCode').textContent = hex;
+        
+        const variations = generateVariations(hex);
+        updateVariationsDisplay(variations);
     }
 
-    // Color variations
-    for(let i = 0; i < 4; i++) {
-        const newH = (hsv.h + (i * 30)) % 360;
-        const newRgb = hsvToRgb(newH, hsv.s, hsv.v);
-        variations.color.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+    function generateVariations(hex) {
+        const rgb = hexToRgb(hex);
+        const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+        const variations = {
+            brightness: [],
+            color: [],
+            saturation: []
+        };
+
+        // Brightness variations
+        for(let i = 0; i < 4; i++) {
+            const newV = Math.min(100, (hsv.v * (0.4 + (i * 0.2))));
+            const newRgb = hsvToRgb(hsv.h, hsv.s, newV);
+            variations.brightness.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+        }
+
+        // Color variations
+        for(let i = 0; i < 4; i++) {
+            const newH = (hsv.h + (i * 30)) % 360;
+            const newRgb = hsvToRgb(newH, hsv.s, hsv.v);
+            variations.color.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+        }
+
+        // Saturation variations
+        for(let i = 0; i < 4; i++) {
+            const newS = Math.min(100, hsv.s * (0.25 + (i * 0.25)));
+            const newRgb = hsvToRgb(hsv.h, newS, hsv.v);
+            variations.saturation.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
+        }
+
+        return variations;
     }
 
-    // Saturation variations
-    for(let i = 0; i < 4; i++) {
-        const newS = Math.min(100, hsv.s * (0.25 + (i * 0.25)));
-        const newRgb = hsvToRgb(hsv.h, newS, hsv.v);
-        variations.saturation.push(rgbToHex(newRgb.r, newRgb.g, newRgb.b));
-    }
+    function updateVariationsDisplay(variations) {
+        const container = document.getElementById('variations');
+        container.innerHTML = '';
 
-    return variations;
-}
+        ['brightness', 'color', 'saturation'].forEach((type) => {
+            const label = document.createElement('div');
+            label.className = 'row-label';
+            label.textContent = type.charAt(0).toUpperCase() + type.slice(1) + ' Variations';
+            container.appendChild(label);
 
-function updateVariationsDisplay(variations) {
-    const container = document.getElementById('variations');
-    container.innerHTML = '';
-
-    ['brightness', 'color', 'saturation'].forEach((type) => {
-        const label = document.createElement('div');
-        label.className = 'row-label';
-        label.textContent = type.charAt(0).toUpperCase() + type.slice(1) + ' Variations';
-        container.appendChild(label);
-
-        variations[type].forEach(hex => {
-            const card = document.createElement('div');
-            card.className = 'variation-card';
-            const name = getColorName(hex);
-            
-            card.innerHTML = `
-                <div class="variation-box" style="background-color: ${hex}"></div>
-                <div class="variation-name">${name}</div>
-                <div class="variation-hex">${hex}</div>
-            `;
-            container.appendChild(card);
+            variations[type].forEach(hex => {
+                const card = document.createElement('div');
+                card.className = 'variation-card';
+                const name = getColorName(hex);
+                
+                card.innerHTML = `
+                    <div class="variation-box" style="background-color: ${hex}"></div>
+                    <div class="variation-name">${name}</div>
+                    <div class="variation-hex">${hex}</div>
+                `;
+                container.appendChild(card);
+            });
         });
-    });
+    }
+
+    // Initialize with a random color on load
+    generateNewColor();
 }
 
-function generateNewColor() {
-    const hex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
-    document.getElementById('mainColor').style.backgroundColor = hex;
-    document.getElementById('colorName').textContent = getColorName(hex);
-    document.getElementById('hexCode').textContent = hex;
-    
-    const variations = generateVariations(hex);
-    updateVariationsDisplay(variations);
+// Export functions for testing
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        hexToRgb,
+        rgbToHex,
+        getMsbIndex,
+        getRemainingBits,
+        rgbToHsv,
+        hsvToRgb,
+        getModifierIndices,
+        getColorName,
+        baseColors,
+        luminosityWords,
+        purityWords,
+        atmosphericWords
+    };
 }
-
-// Initialize with a random color on load
-generateNewColor();

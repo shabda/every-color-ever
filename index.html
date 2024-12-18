@@ -3,26 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Name Explorer</title>
+    <title>Every Color Ever</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <div class="main-color">
+        <div class="main-section">
             <h1>Your Lucky Color</h1>
-            <div class="color-box" id="mainColor"></div>
-            <div class="color-info">
-                <div class="name-container">
-                    <div class="color-name" id="colorName"></div>
-                </div>
-                <div class="hex-code" id="hexCode"></div>
+            <div id="color-display"></div>
+            <div id="color-info">
+                <div id="hex-value"></div>
+                <div id="color-name"></div>
             </div>
             <button onclick="generateNewColor()">Get New Lucky Color</button>
         </div>
-
-        <div class="variations-grid" id="variationsGrid"></div>
+        <div id="variations"></div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>

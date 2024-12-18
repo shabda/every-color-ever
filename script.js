@@ -272,28 +272,16 @@ function getColorFromName(name) {
 // Browser-specific code
 if (typeof window !== 'undefined') {
     function generateNewColor() {
-        const r = Math.floor(Math.random() * 256);
-        const g = Math.floor(Math.random() * 256);
-        const b = Math.floor(Math.random() * 256);
-        const hex = rgbToHex(r, g, b);
-        
-        // Update URL with the new color
-        updateUrlColor(hex);
-        displayColor(hex);
+        const randomHex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+        displayColor(randomHex);
+        updateUrlColor(randomHex);
     }
 
     function displayColor(hex) {
-        const name = getColorName(hex);
-        const rgb = hexToRgb(hex);
-        
-        document.getElementById('mainColor').style.backgroundColor = hex;
-        const colorNameElement = document.getElementById('colorName');
-        colorNameElement.textContent = name;
-        colorNameElement.dataset.originalName = name;
-        createNameEditor(colorNameElement, true);
-        document.getElementById('hexCode').textContent = hex;
-        
-        generateVariations(rgb);
+        document.getElementById('color-display').style.backgroundColor = hex;
+        document.getElementById('hex-value').textContent = hex;
+        document.getElementById('color-name').textContent = getColorName(hex);
+        generateVariations(hex);
     }
 
     function updateUrlColor(hex) {
@@ -318,25 +306,49 @@ if (typeof window !== 'undefined') {
         }
     };
 
-    // Initialize with URL color or random color
+    // Initialize with a random color on load
     window.onload = function() {
         const urlColor = getUrlColor();
-        if (urlColor && /^#[0-9A-F]{6}$/i.test(urlColor)) {
+        if (urlColor) {
             displayColor(urlColor);
         } else {
             generateNewColor();
         }
     };
 
-    function generateVariations(mainColor) {
-        const variationsContainer = document.getElementById('variationsGrid');
+    function generateVariations(hex) {
+        const variationsContainer = document.getElementById('variations');
         variationsContainer.innerHTML = '';
 
-        // Generate 20 variations (5x4 grid)
-        const variations = [];
-        const hsv = rgbToHsv(mainColor.r, mainColor.g, mainColor.b);
+        const variations = generateColorVariations(hex);
+        variations.forEach(variation => {
+            const card = document.createElement('div');
+            card.className = 'variation-card';
 
-        // Create variations with different hue, saturation, and value combinations
+            const colorBox = document.createElement('div');
+            colorBox.className = 'variation-color';
+            colorBox.style.backgroundColor = variation;
+
+            const hexElement = document.createElement('div');
+            hexElement.className = 'variation-hex';
+            hexElement.textContent = variation;
+
+            const nameElement = document.createElement('div');
+            nameElement.className = 'variation-name';
+            nameElement.textContent = getColorName(variation);
+
+            card.appendChild(colorBox);
+            card.appendChild(hexElement);
+            card.appendChild(nameElement);
+            variationsContainer.appendChild(card);
+        });
+    }
+
+    function generateColorVariations(hex) {
+        const rgb = hexToRgb(hex);
+        const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+
+        const variations = [];
         for (let i = 0; i < 20; i++) {
             const hueShift = (i % 4) * 30 - 45;  // Shifts between -45 and +45 degrees
             const saturationMod = 1 - (Math.floor(i / 4) * 0.2);  // Decreases saturation by row
@@ -348,73 +360,11 @@ if (typeof window !== 'undefined') {
 
             const rgb = hsvToRgb(newHue, newSaturation, newValue);
             const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-            variations.push({
-                hex: hex,
-                name: getColorName(hex)
-            });
+            variations.push(hex);
         }
 
-        // Display variations
-        variations.forEach(variation => {
-            const card = document.createElement('div');
-            card.className = 'variation-card';
-            
-            const colorBox = document.createElement('div');
-            colorBox.className = 'variation-color';
-            colorBox.style.backgroundColor = variation.hex;
-            
-            const info = document.createElement('div');
-            info.className = 'variation-info';
-            
-            const nameContainer = document.createElement('div');
-            nameContainer.className = 'name-container';
-            
-            const name = document.createElement('div');
-            name.className = 'variation-name';
-            name.textContent = variation.name;
-            nameContainer.appendChild(name);
-            
-            const hex = document.createElement('div');
-            hex.className = 'variation-hex';
-            hex.textContent = variation.hex;
-            
-            info.appendChild(nameContainer);
-            info.appendChild(hex);
-            card.appendChild(colorBox);
-            card.appendChild(info);
-            
-            createNameEditor(name, false);
-            variationsContainer.appendChild(card);
-        });
+        return variations;
     }
-
-    function updateVariationsDisplay(variations) {
-        const container = document.getElementById('variations');
-        container.innerHTML = '';
-
-        ['brightness', 'color', 'saturation'].forEach((type) => {
-            const label = document.createElement('div');
-            label.className = 'row-label';
-            label.textContent = type.charAt(0).toUpperCase() + type.slice(1) + ' Variations';
-            container.appendChild(label);
-
-            variations[type].forEach(hex => {
-                const card = document.createElement('div');
-                card.className = 'variation-card';
-                const name = getColorName(hex);
-                
-                card.innerHTML = `
-                    <div class="variation-box" style="background-color: ${hex}"></div>
-                    <div class="variation-name">${name}</div>
-                    <div class="variation-hex">${hex}</div>
-                `;
-                container.appendChild(card);
-            });
-        });
-    }
-
-    // Initialize with a random color on load
-    // generateNewColor();
 }
 
 // Export functions for testing
@@ -433,113 +383,4 @@ if (typeof module !== 'undefined' && module.exports) {
         purityWords,
         atmosphericWords
     };
-}
-
-function createNameEditor(nameElement, isMainColor = false) {
-    const nameContainer = nameElement.parentElement;
-    if (!nameContainer) return;
-
-    // Create edit button
-    const editButton = document.createElement('button');
-    editButton.className = 'edit-button';
-    editButton.innerHTML = '&#9998;';
-    nameContainer.appendChild(editButton);
-
-    // Create editor container
-    const editorContainer = document.createElement('div');
-    editorContainer.className = 'name-editor';
-    editorContainer.style.display = 'none';
-
-    // Create dropdowns for each part
-    const luminositySelect = createSelect('Luminosity', luminosityWords);
-    const puritySelect = createSelect('Purity', purityWords);
-    const atmosphericSelect = createSelect('Atmospheric', atmosphericWords);
-    const baseColorSelect = createSelect('Base Color', baseColors);
-
-    // Create apply button
-    const applyButton = document.createElement('button');
-    applyButton.className = 'apply-button';
-    applyButton.textContent = 'Apply';
-
-    // Create cancel button
-    const cancelButton = document.createElement('button');
-    cancelButton.className = 'cancel-button';
-    cancelButton.textContent = 'Cancel';
-
-    // Add all elements to container
-    editorContainer.appendChild(luminositySelect);
-    editorContainer.appendChild(puritySelect);
-    editorContainer.appendChild(atmosphericSelect);
-    editorContainer.appendChild(baseColorSelect);
-    editorContainer.appendChild(applyButton);
-    editorContainer.appendChild(cancelButton);
-    nameContainer.appendChild(editorContainer);
-
-    // Set initial values based on current name
-    function setInitialValues() {
-        const parts = nameElement.textContent.split(' ');
-        if (parts.length === 4) {
-            luminositySelect.querySelector('select').value = parts[0];
-            puritySelect.querySelector('select').value = parts[1];
-            atmosphericSelect.querySelector('select').value = parts[2];
-            baseColorSelect.querySelector('select').value = parts[3];
-        }
-    }
-
-    // Event Handlers
-    editButton.addEventListener('click', () => {
-        nameElement.style.display = 'none';
-        editButton.style.display = 'none';
-        editorContainer.style.display = 'flex';
-        setInitialValues();
-    });
-
-    applyButton.addEventListener('click', () => {
-        const newName = `${luminositySelect.querySelector('select').value} ${puritySelect.querySelector('select').value} ${atmosphericSelect.querySelector('select').value} ${baseColorSelect.querySelector('select').value}`;
-        const color = getColorFromName(newName);
-        
-        if (color) {
-            if (isMainColor) {
-                updateUrlColor(color);
-                displayColor(color);
-            } else {
-                const card = nameContainer.closest('.variation-card');
-                const colorBox = card.querySelector('.variation-color');
-                const hexElement = card.querySelector('.variation-hex');
-                colorBox.style.backgroundColor = color;
-                hexElement.textContent = color;
-                nameElement.textContent = newName;
-            }
-        }
-        
-        nameElement.style.display = 'block';
-        editButton.style.display = 'inline';
-        editorContainer.style.display = 'none';
-    });
-
-    cancelButton.addEventListener('click', () => {
-        nameElement.style.display = 'block';
-        editButton.style.display = 'inline';
-        editorContainer.style.display = 'none';
-    });
-}
-
-function createSelect(label, options) {
-    const container = document.createElement('div');
-    container.className = 'select-container';
-    
-    const labelElement = document.createElement('label');
-    labelElement.textContent = label;
-    
-    const select = document.createElement('select');
-    options.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option;
-        optionElement.textContent = option;
-        select.appendChild(optionElement);
-    });
-    
-    container.appendChild(labelElement);
-    container.appendChild(select);
-    return container;
 }

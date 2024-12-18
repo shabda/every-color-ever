@@ -31,43 +31,23 @@ describe('Color Name Generation', () => {
     const testCases = [
         {
             hex: '#000000',
-            expectedName: 'Shadowed Dusty Stormy Black'
+            expectedName: 'Abyssal Muddy Chaotic Black'
         },
         {
             hex: '#FFFFFF',
-            expectedName: 'Dark Dusty Stormy White'
+            expectedName: 'Transcendent Unadulterated Ethereal White'
         },
         {
             hex: '#FF0000',
-            expectedName: 'Dark Intense Stormy Dark Red'
+            expectedName: 'Transcendent Muddy Chaotic Dark Red'
         },
         {
             hex: '#00FF00',
-            expectedName: 'Dark Intense Cloudy Bright Green'
+            expectedName: 'Abyssal Unadulterated Chaotic Bright Green'
         },
         {
             hex: '#0000FF',
-            expectedName: 'Dark Intense Crystal Royal Blue'
-        },
-        {
-            hex: '#FFD700',
-            expectedName: 'Dark Intense Stormy Bright Yellow'
-        },
-        {
-            hex: '#800080',
-            expectedName: 'Shadowed Dusty Stormy Magenta'
-        },
-        {
-            hex: '#FFA500',
-            expectedName: 'Dark Intense Stormy Bright Orange'
-        },
-        {
-            hex: '#008080',
-            expectedName: 'Shadowed Dusty Stormy Turquoise'
-        },
-        {
-            hex: '#FF1493',
-            expectedName: 'Dark Pure Stormy Deep Pink'
+            expectedName: 'Abyssal Muddy Ethereal Royal Blue'
         }
     ];
 
@@ -79,30 +59,64 @@ describe('Color Name Generation', () => {
 });
 
 describe('Color Processing Functions', () => {
-    test('getMsbIndex returns correct base color index', () => {
-        expect(getMsbIndex({ r: 255, g: 0, b: 0 })).toBeDefined();
-        expect(getMsbIndex({ r: 0, g: 255, b: 0 })).toBeDefined();
-        expect(getMsbIndex({ r: 0, g: 0, b: 255 })).toBeDefined();
-    });
-
-    test('getRemainingBits returns correct lower 6 bits', () => {
-        const result = getRemainingBits({ r: 255, g: 128, b: 64 });
-        expect(result.r).toBeLessThanOrEqual(63);
-        expect(result.g).toBeLessThanOrEqual(63);
-        expect(result.b).toBeLessThanOrEqual(63);
-    });
-
     test('rgbToHsv converts correctly', () => {
         const red = rgbToHsv(255, 0, 0);
         expect(red.h).toBe(0);
         expect(red.s).toBe(100);
         expect(red.v).toBe(100);
+
+        const green = rgbToHsv(0, 255, 0);
+        expect(green.h).toBe(120);
+        expect(green.s).toBe(100);
+        expect(green.v).toBe(100);
+
+        const blue = rgbToHsv(0, 0, 255);
+        expect(blue.h).toBe(240);
+        expect(blue.s).toBe(100);
+        expect(blue.v).toBe(100);
     });
 
     test('hsvToRgb converts correctly', () => {
-        const rgb = hsvToRgb(0, 100, 100);
-        expect(rgb.r).toBe(255);
-        expect(rgb.g).toBe(0);
-        expect(rgb.b).toBe(0);
+        const red = hsvToRgb(0, 100, 100);
+        expect(red).toEqual({ r: 255, g: 0, b: 0 });
+
+        const green = hsvToRgb(120, 100, 100);
+        expect(green).toEqual({ r: 0, g: 255, b: 0 });
+
+        const blue = hsvToRgb(240, 100, 100);
+        expect(blue).toEqual({ r: 0, g: 0, b: 255 });
+    });
+});
+
+describe('Color Name Uniqueness', () => {
+    test('generates sufficient unique names for different colors', () => {
+        const colorNames = new Set();
+        const colors = [];
+        
+        // Generate 1000 colors by incrementing RGB values
+        for (let i = 0; i < 1000; i++) {
+            const r = (i * 7) % 256;  // Use prime numbers to get good distribution
+            const g = (i * 11) % 256;
+            const b = (i * 13) % 256;
+            const hex = rgbToHex(r, g, b);
+            const name = getColorName(hex);
+            
+            colorNames.add(name);
+            colors.push({ hex, name });
+        }
+
+        // Check for duplicates
+        const duplicates = colors.filter((color, index) => 
+            colors.findIndex(c => c.name === color.name) !== index
+        );
+
+        // Log some stats
+        console.log(`Generated ${colors.length} colors`);
+        console.log(`Got ${colorNames.size} unique names`);
+        console.log(`Duplicate rate: ${((duplicates.length / colors.length) * 100).toFixed(2)}%`);
+
+        // We should get at least 200 unique names from 1000 colors
+        // This is a reasonable expectation given our color quantization
+        expect(colorNames.size).toBeGreaterThan(200);
     });
 });

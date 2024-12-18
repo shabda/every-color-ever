@@ -96,12 +96,12 @@ const COLOR_OPTIONS = {
 
 // Utility functions
 function hexToRgb(hex) {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
+    const result = /^#([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return {
         r: parseInt(result[1], 16),
         g: parseInt(result[2], 16),
         b: parseInt(result[3], 16)
-    } : null;
+    };
 }
 
 function rgbToHex(r, g, b) {
@@ -247,7 +247,10 @@ function getColorFromName(name) {
 // Browser-specific code
 if (typeof window !== 'undefined') {
     function generateNewColor() {
-        const randomHex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+        const r = Math.floor(Math.random() * 256);
+        const g = Math.floor(Math.random() * 256);
+        const b = Math.floor(Math.random() * 256);
+        const randomHex = rgbToHex(r, g, b);
         displayColor(randomHex);
         updateUrlColor(randomHex);
     }
@@ -256,20 +259,20 @@ if (typeof window !== 'undefined') {
         document.getElementById('color-display').style.backgroundColor = hex;
         document.getElementById('hex-value').textContent = hex;
         document.getElementById('color-name').textContent = getColorName(hex);
+        document.getElementById('color-picker').value = hex;
         generateVariations(hex);
     }
 
     function updateUrlColor(hex) {
-        // Remove the # from hex code for the URL
         const colorParam = hex.substring(1);
-        const newUrl = `${window.location.pathname}?color=${colorParam}`;
+        const newUrl = window.location.pathname + '?color=' + colorParam;
         window.history.pushState({ color: hex }, '', newUrl);
     }
 
     function getUrlColor() {
         const params = new URLSearchParams(window.location.search);
-        const colorParam = params.get('color');
-        return colorParam ? `#${colorParam}` : null;
+        const color = params.get('color');
+        return color && /^[0-9a-f]{6}$/i.test(color) ? '#' + color : null;
     }
 
     // Handle browser back/forward buttons
@@ -277,11 +280,14 @@ if (typeof window !== 'undefined') {
         if (event.state && event.state.color) {
             displayColor(event.state.color);
         } else {
-            generateNewColor();
+            const urlColor = getUrlColor();
+            if (urlColor) {
+                displayColor(urlColor);
+            }
         }
     };
 
-    // Initialize with a random color on load
+    // Initialize with URL color or random color
     window.onload = function() {
         const urlColor = getUrlColor();
         if (urlColor) {
@@ -290,6 +296,32 @@ if (typeof window !== 'undefined') {
             generateNewColor();
         }
     };
+
+    function copyHexToClipboard() {
+        const hexValue = document.getElementById('hex-value').textContent;
+        navigator.clipboard.writeText(hexValue).then(() => {
+            const button = document.querySelector('.button-group button:last-child');
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 1500);
+        });
+    }
+
+    // Initialize color picker
+    const colorPicker = document.getElementById('color-picker');
+    colorPicker.addEventListener('input', (e) => {
+        const newColor = e.target.value;
+        displayColor(newColor);
+        updateUrlColor(newColor);
+    });
+
+    // Make color display clickable
+    const colorDisplay = document.getElementById('color-display');
+    colorDisplay.addEventListener('click', () => {
+        colorPicker.click();
+    });
 
     function generateVariations(hex) {
         const variationsContainer = document.getElementById('variations');
@@ -322,20 +354,43 @@ if (typeof window !== 'undefined') {
     function generateColorVariations(hex) {
         const rgb = hexToRgb(hex);
         const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-
         const variations = [];
-        for (let i = 0; i < 20; i++) {
-            const hueShift = (i % 4) * 30 - 45;  // Shifts between -45 and +45 degrees
-            const saturationMod = 1 - (Math.floor(i / 4) * 0.2);  // Decreases saturation by row
-            const valueMod = 0.5 + (Math.floor(i / 8) * 0.25);  // Adjusts value every two rows
 
-            const newHue = (hsv.h + hueShift + 360) % 360;
-            const newSaturation = Math.max(0, Math.min(100, hsv.s * saturationMod));
-            const newValue = Math.max(0, Math.min(100, hsv.v * valueMod));
+        // Create 4 rows of 5 variations each
+        for (let row = 0; row < 4; row++) {
+            for (let col = 0; col < 5; col++) {
+                let newHue, newSaturation, newValue;
+                
+                if (row === 3) {
+                    // Last row: completely random colors
+                    newHue = Math.random() * 360;
+                    newSaturation = 20 + Math.random() * 80; // Ensure some minimum saturation
+                    newValue = 20 + Math.random() * 80; // Ensure some minimum brightness
+                } else {
+                    // Calculate variations based on row type
+                    switch(row) {
+                        case 0: // Hue variations
+                            newHue = (hsv.h + (col - 2) * 72 + 360) % 360; // Ensure positive hue
+                            newSaturation = hsv.s;
+                            newValue = hsv.v;
+                            break;
+                        case 1: // Saturation variations
+                            newHue = hsv.h;
+                            newSaturation = Math.max(0, Math.min(100, hsv.s + (col - 2) * 35));
+                            newValue = hsv.v;
+                            break;
+                        case 2: // Value/Brightness variations
+                            newHue = hsv.h;
+                            newSaturation = hsv.s;
+                            newValue = Math.max(0, Math.min(100, hsv.v + (col - 2) * 35));
+                            break;
+                    }
+                }
 
-            const rgb = hsvToRgb(newHue, newSaturation, newValue);
-            const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-            variations.push(hex);
+                const newRgb = hsvToRgb(newHue, newSaturation, newValue);
+                const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+                variations.push(newHex);
+            }
         }
 
         return variations;

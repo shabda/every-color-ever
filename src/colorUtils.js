@@ -67,9 +67,15 @@ function rgbToHsv(r, g, b) {
 }
 
 function hsvToRgb(h, s, v) {
-    h /= 360;
-    s /= 100;
-    v /= 100;
+    // Normalize values
+    h = ((h % 360) + 360) % 360; // Force h into [0, 360)
+    s = Math.min(100, Math.max(0, s)); // Force s into [0, 100]
+    v = Math.min(100, Math.max(0, v)); // Force v into [0, 100]
+    
+    // Convert to [0, 1] range
+    h = h / 360;
+    s = s / 100;
+    v = v / 100;
 
     const i = Math.floor(h * 6);
     const f = h * 6 - i;

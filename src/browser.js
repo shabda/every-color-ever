@@ -14,8 +14,13 @@ function generateVariations(hex) {
 
     // Row 1: Saturation variations
     for (let i = 0; i < 5; i++) {
-        const newS = i / 4; // 0, 0.25, 0.5, 0.75, 1
-        const newRgb = hsvToRgb(hsv.h, newS, hsv.v);
+        // Use exponential steps for more visual difference
+        // This gives us roughly: 0%, 6%, 25%, 60%, 100%
+        const t = i / 4;  // 0 to 1
+        const newS = Math.round(t * t * 100);
+        // Ensure some minimum value for saturation variations
+        const newV = Math.max(hsv.v, 30);
+        const newRgb = hsvToRgb(hsv.h, newS, newV);
         variations.push({
             hex: rgbToHex(newRgb.r, newRgb.g, newRgb.b),
             type: 'Saturation'
@@ -24,8 +29,13 @@ function generateVariations(hex) {
 
     // Row 2: Hue variations
     for (let i = 0; i < 5; i++) {
-        const newH = (hsv.h + (i * 72)) % 360; // 0°, 72°, 144°, 216°, 288°
-        const newRgb = hsvToRgb(newH, hsv.s, hsv.v);
+        // Start at 30° and go around the wheel
+        // This gives us: 30°, 102°, 174°, 246°, 318°
+        const newH = (hsv.h + 30 + (i * 72)) % 360;
+        // Ensure some minimum saturation and value for hue variations
+        const newS = Math.max(hsv.s, 30);
+        const newV = Math.max(hsv.v, 30);
+        const newRgb = hsvToRgb(newH, newS, newV);
         variations.push({
             hex: rgbToHex(newRgb.r, newRgb.g, newRgb.b),
             type: 'Hue'
@@ -34,13 +44,35 @@ function generateVariations(hex) {
 
     // Row 3: Mixed variations (vary all slightly)
     for (let i = 0; i < 5; i++) {
-        const hueShift = -30 + (i * 15); // -30°, -15°, 0°, 15°, 30°
+        // Vary hue by -20%, -10%, 0, +10%, +20% of 360 degrees
+        const hueShift = ((i - 2) * 0.2) * 360;
         const newH = (hsv.h + hueShift + 360) % 360;
-        const newS = Math.max(0, Math.min(1, hsv.s + (Math.random() * 0.4 - 0.2))); // ±20%
-        const newV = Math.max(0, Math.min(1, hsv.v + (Math.random() * 0.4 - 0.2))); // ±20%
-        const newRgb = hsvToRgb(newH, newS, newV);
+        
+        // Vary saturation by -20%, -10%, 0, +10%, +20% of current saturation
+        const satShift = (i - 2) * 0.2 * hsv.s;
+        const newS = Math.max(0, Math.min(100, hsv.s + satShift));
+        
+        // Vary value by -20%, -10%, 0, +10%, +20% of current value
+        const valShift = (i - 2) * 0.2 * hsv.v;
+        const newV = Math.max(0, Math.min(100, hsv.v + valShift));
+        
+        // Make bigger changes for more variety
+        const finalH = (newH + (i * 30)) % 360;
+        const finalS = Math.max(20, Math.min(100, newS + (i - 2) * 10));
+        const finalV = Math.max(20, Math.min(100, newV + (i - 2) * 10));
+        
+        const newRgb = hsvToRgb(finalH, finalS, finalV);
+        const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
+        
+        console.log('Mixed variation', i, {
+            original: { h: hsv.h, s: hsv.s, v: hsv.v },
+            shifts: { hue: hueShift, sat: satShift, val: valShift },
+            final: { h: finalH, s: finalS, v: finalV },
+            result: { rgb: newRgb, hex: newHex }
+        });
+        
         variations.push({
-            hex: rgbToHex(newRgb.r, newRgb.g, newRgb.b),
+            hex: newHex,
             type: 'Mixed'
         });
     }

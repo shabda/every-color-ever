@@ -159,7 +159,7 @@ describe('Color Name Uniqueness', () => {
         });
     });
 
-    test('bidirectional color conversion maintains reasonable tolerance', () => {
+    test('bidirectional color conversion maintains reasonable tolerance over 10000 colors', () => {
         // Helper function to generate random hex color
         function randomHex() {
             const r = Math.floor(Math.random() * 256);
@@ -179,9 +179,10 @@ describe('Color Name Uniqueness', () => {
             );
         }
 
-        const numTests = 1000;
+        const numTests = 10000;
         let maxDifference = 0;
         let totalDifference = 0;
+        const differences = [];
 
         for (let i = 0; i < numTests; i++) {
             const originalHex = randomHex();
@@ -190,17 +191,29 @@ describe('Color Name Uniqueness', () => {
             const resultHex = rgbToHex(rgb.r, rgb.g, rgb.b);
             
             const difference = colorDifference(originalHex, resultHex);
+            differences.push(difference);
             maxDifference = Math.max(maxDifference, difference);
             totalDifference += difference;
 
-            // Allow for small differences due to bit masking
-            // A difference of 48 means each channel can be off by about 16 values
+            // Each individual color should be within tolerance
             expect(difference).toBeLessThan(48);
         }
 
+        const avgDifference = totalDifference / numTests;
+
         // Log statistics
         console.log(`Tested ${numTests} random colors`);
-        console.log(`Maximum color difference: ${maxDifference}`);
-        console.log(`Average color difference: ${totalDifference / numTests}`);
+        console.log(`Maximum color difference: ${maxDifference.toFixed(2)}`);
+        console.log(`Average color difference: ${avgDifference.toFixed(2)}`);
+        
+        // Calculate 95th percentile
+        differences.sort((a, b) => a - b);
+        const percentile95 = differences[Math.floor(numTests * 0.95)];
+        console.log(`95th percentile difference: ${percentile95.toFixed(2)}`);
+
+        // Assertions about the distribution
+        expect(maxDifference).toBeLessThan(48);
+        expect(avgDifference).toBeLessThan(16); // Average should be much better than max
+        expect(percentile95).toBeLessThan(32); // 95% of colors should be even better
     });
 });

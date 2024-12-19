@@ -174,22 +174,9 @@ h1 {
     max-width: fit-content;
 }
 
-.button-group.fixed-bottom {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0;
-    border-radius: 24px 24px 0 0;
-    z-index: 1000;
-    padding: 16px;
-    background: rgba(248, 249, 251, 0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.08);
-    max-width: 600px;
-    width: 100%;
-    transition: height 0.3s ease;
+.button-group.fixed-bottom,
+.fixed-bottom {
+    display: none;
 }
 
 button {
@@ -292,10 +279,11 @@ button:hover {
 }
 
 #name-input-container {
-    width: 100%;
-    margin-top: 16px;
-    overflow: hidden;
-    transition: all 0.3s ease;
+    margin-top: 24px;
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
 }
 
 #name-input-container.hidden {
@@ -305,30 +293,23 @@ button:hover {
 
 #color-name-input {
     width: 100%;
-    padding: 12px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
+    padding: 12px 16px;
+    border: 2px solid #eee;
+    border-radius: 8px;
     font-size: 16px;
-    font-family: inherit;
-    background: white;
-    transition: all 0.3s ease;
+    transition: border-color 0.2s;
 }
 
 #color-name-input:focus {
     outline: none;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    border-color: #0066cc;
 }
 
 #name-result {
+    margin-top: 16px;
     display: flex;
+    gap: 16px;
     align-items: center;
-    gap: 12px;
-    margin-top: 12px;
-    padding: 12px;
-    border-radius: 12px;
-    background: white;
-    transition: all 0.3s ease;
 }
 
 #name-result.hidden {
@@ -336,8 +317,8 @@ button:hover {
 }
 
 #name-result-color {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -350,6 +331,96 @@ button:hover {
 
 .hidden {
     display: none;
+}
+
+.help-button {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.help-button:hover {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.help-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    margin: 16px 0;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    opacity: 0;
+}
+
+.help-content.visible {
+    max-height: 1200px;
+    opacity: 1;
+    transition: max-height 0.5s ease-in, opacity 0.3s ease-in;
+}
+
+.help-section {
+    padding: 24px;
+    font-size: 15px;
+    line-height: 1.5;
+    max-height: 70vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.help-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.help-section::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.help-section::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+    .help-section {
+        max-height: 60vh;
+        padding: 20px;
+        font-size: 14px;
+    }
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.icon-button:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 @media (max-width: 768px) {
@@ -376,10 +447,10 @@ button:hover {
     }
     
     .icon-button {
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
-        min-height: 40px;
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
     }
     
     .icon-button span {
@@ -390,13 +461,6 @@ button:hover {
         padding: 16px;
         border-radius: 20px;
         flex-wrap: wrap;
-    }
-    
-    .button-group.fixed-bottom {
-        padding: 12px;
-        gap: 8px;
-        width: calc(100% - 32px); /* Account for body padding */
-        max-width: none;
     }
     
     #variations {
@@ -418,26 +482,85 @@ button:hover {
     }
     
     #name-input-container {
-        margin-top: 12px;
+        margin-top: 20px;
+        padding: 12px;
     }
     
     #color-name-input {
-        padding: 10px;
-        font-size: 14px;
+        padding: 10px 14px;
+        font-size: 15px;
     }
     
     #name-result {
-        padding: 10px;
-        margin-top: 10px;
+        margin-top: 12px;
+        gap: 12px;
     }
     
     #name-result-color {
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
     }
     
     #name-result-hex {
         font-size: 14px;
+    }
+    
+    .help-button {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+    }
+    
+    .help-section {
+        padding: 20px;
+        font-size: 14px;
+    }
+    
+    .help-section h4 {
+        font-size: 16px;
+    }
+}
+
+.variations-message {
+    text-align: center;
+    color: #4a4a4a;
+    font-size: 15px;
+    margin: 24px 0 16px;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .variations-message {
+        font-size: 14px;
+        margin: 20px 0 12px;
+    }
+}
+
+.site-footer {
+    text-align: center;
+    padding: 24px 20px;
+    color: #666;
+    font-size: 14px;
+    margin-top: 40px;
+}
+
+.site-footer a {
+    color: #1a1a1a;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.site-footer a:hover {
+    color: #0066cc;
+}
+
+@media (max-width: 768px) {
+    .site-footer {
+        padding: 20px 16px;
+        margin-top: 32px;
+        font-size: 13px;
+        padding-bottom: calc(20px + env(safe-area-inset-bottom));
     }
 }
 

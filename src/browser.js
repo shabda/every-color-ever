@@ -152,8 +152,12 @@ function updateColor(r, g, b) {
     // Update text displays
     const hexValue = document.getElementById('hex-value');
     const nameValue = document.getElementById('color-name');
+    const variationsMessage = document.querySelector('.variations-message');
     if (hexValue) hexValue.textContent = hex;
     if (nameValue) nameValue.textContent = colorName;
+    if (variationsMessage) {
+        variationsMessage.textContent = `Don't like ${colorName}? We have 16.7 million more for you to try.`;
+    }
     
     // Update URL without reloading
     const url = new URL(window.location);
@@ -282,6 +286,8 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         const nameResultColor = document.getElementById('name-result-color');
         const nameResultHex = document.getElementById('name-result-hex');
         const nameToHexForm = document.getElementById('name-to-hex-form');
+        const helpBtn = document.getElementById('help-btn');
+        const helpContent = document.getElementById('help-content');
         
         if (randomColorBtn) {
             randomColorBtn.addEventListener('click', generateNewColor);
@@ -328,6 +334,20 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
                     updateColor(result.rgb.r, result.rgb.g, result.rgb.b);
                     nameInput.value = '';
                     nameInputContainer.classList.add('hidden');
+                }
+            });
+        }
+        
+        if (helpBtn && helpContent) {
+            helpBtn.addEventListener('click', () => {
+                helpContent.classList.toggle('hidden');
+                // Use setTimeout to ensure the transition works
+                if (!helpContent.classList.contains('hidden')) {
+                    setTimeout(() => {
+                        helpContent.classList.add('visible');
+                    }, 10);
+                } else {
+                    helpContent.classList.remove('visible');
                 }
             });
         }

@@ -10,7 +10,8 @@
     "build": "webpack",
     "watch": "webpack --watch",
     "serve": "http-server",
-    "dev": "npm run build && npm start"
+    "dev": "npm run build && npm start",
+    "deploy": "bash scripts/deploy.sh"
   },
   "jest": {
     "testEnvironment": "jsdom",

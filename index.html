@@ -19,35 +19,79 @@
                 <div class="color-text-overlay">
                     <div id="color-name"></div>
                     <div id="hex-value"></div>
-                    <div class="color-actions">
-                        <button class="icon-button" id="random-color-btn" aria-label="Generate random color">
-                            <span class="material-symbols-rounded">autorenew</span>
+                    <div class="action-buttons">
+                        <button id="random-color-btn" class="icon-button" aria-label="Generate random color">
+                            <span class="material-symbols-rounded">casino</span>
                         </button>
-                        <label class="icon-button" for="color-picker" aria-label="Choose color">
+                        <input type="color" id="color-picker" class="hidden">
+                        <label for="color-picker" class="icon-button" aria-label="Pick a color">
                             <span class="material-symbols-rounded">palette</span>
-                            <input type="color" id="color-picker">
                         </label>
+                        <button id="name-to-hex-btn" class="icon-button" aria-label="Convert name to hex">
+                            <span class="material-symbols-rounded">text_fields</span>
+                        </button>
+                        <button id="help-btn" class="icon-button" aria-label="How this works">
+                            <span class="material-symbols-rounded">help</span>
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-        <div id="variations"></div>
-    </div>
-    <div class="button-group fixed-bottom">
-        <button id="name-to-hex-btn">
-            <span class="material-symbols-rounded">text_format</span>
-            Name to Hex
-        </button>
-        <div id="name-input-container" class="hidden">
-            <form id="name-to-hex-form">
-                <input type="text" id="color-name-input" placeholder="Enter color name..." aria-label="Enter color name">
-            </form>
-            <div id="name-result" class="hidden">
-                <div id="name-result-color"></div>
-                <div id="name-result-hex"></div>
+            <div id="help-content" class="help-content hidden">
+                <div class="help-section">
+                    <h4>How it Works</h4>
+                    <p>This tool generates unique, meaningful names for any RGB color using a combination of color properties. Every name is unique and reversible - you can convert any name back to its exact RGB color!</p>
+                    
+                    <h4>Naming Algorithm</h4>
+                    <p>Each color name is constructed from 4 parts:</p>
+                    <ol>
+                        <li><strong>Base Color:</strong> Uses 2 most significant bits from each RGB channel (64 carefully chosen base colors)</li>
+                        <li><strong>Luminosity:</strong> Describes brightness, from "Shadowed" to "Radiant"</li>
+                        <li><strong>Purity:</strong> Indicates color intensity, from "Dusty" to "Intense"</li>
+                        <li><strong>Atmospheric:</strong> Adds character based on hue shifts</li>
+                    </ol>
+                    <p>Example: "Bright Pure Crystal Sapphire" - each word is precisely chosen based on the color's properties.</p>
+                    
+                    <h4>Uniqueness & Verification</h4>
+                    <p>The naming system is bijective - each RGB color maps to exactly one name, and each name maps to exactly one RGB color. You can verify this by:</p>
+                    <ol>
+                        <li>Typing any generated name in the name-to-hex tool</li>
+                        <li>Checking that it converts back to the original color</li>
+                    </ol>
+                    
+                    <h4>Color Variations</h4>
+                    <p>Below the main color, you'll see three types of variations:</p>
+                    <ul>
+                        <li><strong>Saturation Row:</strong> Shows the color from muted to vibrant</li>
+                        <li><strong>Hue Row:</strong> Shows related colors around the color wheel</li>
+                        <li><strong>Mixed Row:</strong> Combines hue and saturation changes</li>
+                    </ul>
+
+                    <h4>Try It Out</h4>
+                    <ul>
+                        <li>Click the 🎲 icon for a random color</li>
+                        <li>Use the 🎨 icon to pick a specific color</li>
+                        <li>Type a color name to see its hex code</li>
+                        <li>Click any variation to make it the main color</li>
+                    </ul>
+                </div>
+            </div>
+            <div id="variations-section">
+                <p class="variations-message">Don't like this color? We have 16.7 million more for you to try.</p>
+                <div id="variations"></div>
+            </div>
+            <div id="name-input-container" class="hidden">
+                <form id="name-to-hex-form">
+                    <input type="text" id="color-name-input" placeholder="Enter color name..." aria-label="Enter color name">
+                </form>
+                <div id="name-result" class="hidden">
+                    <div id="name-result-color"></div>
+                    <div id="name-result-hex"></div>
+                </div>
             </div>
         </div>
-    </div>
-    <script src="dist/bundle.js"></script>
-</body>
+        <footer class="site-footer">
+            Built by <a href="https://x.com/shabda" target="_blank" rel="noopener">@shabda</a>. Any questions? Email <a href="mailto:shabda@agiliq.com">shabda@agiliq.com</a>
+        </footer>
+        <script src="dist/bundle.js"></script>
+    </body>
 </html>

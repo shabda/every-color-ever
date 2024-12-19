@@ -20,6 +20,7 @@ Thumbs.db
 
 # Build and distribution
 dist/
+dist-prod/
 build/
 *.min.js
 *.min.css

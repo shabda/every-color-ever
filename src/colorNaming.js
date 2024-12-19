@@ -64,12 +64,6 @@ function nameToRgb(colorName) {
         b: atmosphericIndex  // maps to atmospheric
     };
 
-    console.log('Name to RGB:', {
-        colorName,
-        indices: { luminosityIndex, purityIndex, atmosphericIndex, baseColorIndex },
-        remainingBits
-    });
-
     return reconstructRgb(baseColorIndex, remainingBits);
 }
 

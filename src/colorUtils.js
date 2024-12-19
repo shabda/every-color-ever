@@ -24,12 +24,6 @@ function getMsbIndex(rgb) {
     // Pack them into a 6-bit value: BBRRGG
     const msbIndex = (bHigh << 4) | (rHigh << 2) | gHigh;
     
-    console.log('MSB Analysis:', {
-        original: { r: rgb.r.toString(2), g: rgb.g.toString(2), b: rgb.b.toString(2) },
-        highBits: { r: rHigh, g: gHigh, b: bHigh },
-        msbIndex: msbIndex.toString(2).padStart(6, '0')
-    });
-    
     return msbIndex;
 }
 
@@ -39,33 +33,7 @@ function getRemainingBits(rgb) {
     const g = rgb.g & 0x3F;
     const b = rgb.b & 0x3F;
 
-    console.log('Bit Extraction:', {
-        input: {
-            r: rgb.r.toString(2).padStart(8, '0'),
-            g: rgb.g.toString(2).padStart(8, '0'),
-            b: rgb.b.toString(2).padStart(8, '0')
-        },
-        mask: '00111111',
-        extracted: {
-            r: r.toString(2).padStart(6, '0'),
-            g: g.toString(2).padStart(6, '0'),
-            b: b.toString(2).padStart(6, '0')
-        },
-        decimal: { r, g, b }
-    });
-
     const bits = { r, g, b };
-
-    // Verify the bits are correctly masked
-    console.log('Verification:', {
-        allBitsInRange: 
-            bits.r <= 0x3F && bits.g <= 0x3F && bits.b <= 0x3F,
-        actualValues: {
-            r: bits.r,
-            g: bits.g,
-            b: bits.b
-        }
-    });
 
     return bits;
 }
@@ -83,25 +51,6 @@ function reconstructRgb(msbIndex, remainingBits) {
         b: (bHigh << 6) | (remainingBits.b & 0x3F) // Ensure correct combination
     };
     
-    console.log('Reconstruction:', {
-        msbIndex: msbIndex.toString(2).padStart(6, '0'),
-        highBits: { 
-            r: rHigh.toString(2).padStart(2, '0'),
-            g: gHigh.toString(2).padStart(2, '0'),
-            b: bHigh.toString(2).padStart(2, '0')
-        },
-        remainingBits: {
-            r: remainingBits.r.toString(2).padStart(6, '0'),
-            g: remainingBits.g.toString(2).padStart(6, '0'),
-            b: remainingBits.b.toString(2).padStart(6, '0')
-        },
-        result: {
-            r: result.r.toString(2).padStart(8, '0'),
-            g: result.g.toString(2).padStart(8, '0'),
-            b: result.b.toString(2).padStart(8, '0')
-        }
-    });
-
     return result;
 }
 

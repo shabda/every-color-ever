@@ -64,17 +64,12 @@ function generateVariations(hex) {
         const newRgb = hsvToRgb(finalH, finalS, finalV);
         const newHex = rgbToHex(newRgb.r, newRgb.g, newRgb.b);
         
-        console.log('Mixed variation', i, {
-            original: { h: hsv.h, s: hsv.s, v: hsv.v },
-            shifts: { hue: hueShift, sat: satShift, val: valShift },
-            final: { h: finalH, s: finalS, v: finalV },
-            result: { rgb: newRgb, hex: newHex }
-        });
-        
-        variations.push({
+        const variation = {
             hex: newHex,
             type: 'Mixed'
-        });
+        };
+        
+        variations.push(variation);
     }
 
     // Row 4: Random colors

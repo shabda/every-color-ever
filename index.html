@@ -27,13 +27,20 @@
     <div class="button-group fixed-bottom">
         <button id="new-color-btn">
             <span class="material-symbols-rounded">autorenew</span>
-            New Color
+            Random Color
         </button>
         <input type="color" id="color-picker" aria-label="Choose color">
-        <button id="copy-hex-btn">
-            <span class="material-symbols-rounded">content_copy</span>
-            Copy Hex
+        <button id="name-to-hex-btn">
+            <span class="material-symbols-rounded">text_format</span>
+            Name to Hex
         </button>
+        <div id="name-input-container" class="hidden">
+            <input type="text" id="color-name-input" placeholder="Enter color name..." aria-label="Enter color name">
+            <div id="name-result" class="hidden">
+                <div id="name-result-color"></div>
+                <div id="name-result-hex"></div>
+            </div>
+        </div>
     </div>
     <script src="dist/bundle.js"></script>
 </body>

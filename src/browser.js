@@ -230,13 +230,43 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     // Add event listeners when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
         const newColorBtn = document.getElementById('new-color-btn');
-        const copyHexBtn = document.getElementById('copy-hex-btn');
+        const nameToHexBtn = document.getElementById('name-to-hex-btn');
+        const nameInput = document.getElementById('color-name-input');
+        const nameInputContainer = document.getElementById('name-input-container');
+        const nameResult = document.getElementById('name-result');
+        const nameResultColor = document.getElementById('name-result-color');
+        const nameResultHex = document.getElementById('name-result-hex');
         
         if (newColorBtn) {
             newColorBtn.addEventListener('click', generateNewColor);
         }
-        if (copyHexBtn) {
-            copyHexBtn.addEventListener('click', copyHexToClipboard);
+
+        if (nameToHexBtn) {
+            nameToHexBtn.addEventListener('click', () => {
+                nameInputContainer.classList.toggle('hidden');
+                if (!nameInputContainer.classList.contains('hidden')) {
+                    nameInput.focus();
+                }
+            });
+        }
+
+        if (nameInput) {
+            nameInput.addEventListener('input', () => {
+                const colorName = nameInput.value.trim();
+                try {
+                    const rgb = nameToRgb(colorName);
+                    if (rgb) {
+                        const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+                        nameResultColor.style.backgroundColor = hex;
+                        nameResultHex.textContent = hex;
+                        nameResult.classList.remove('hidden');
+                    } else {
+                        nameResult.classList.add('hidden');
+                    }
+                } catch (error) {
+                    nameResult.classList.add('hidden');
+                }
+            });
         }
         
         // Check URL for color parameter

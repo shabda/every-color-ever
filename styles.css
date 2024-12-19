@@ -128,6 +128,7 @@ h1 {
     box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.08);
     max-width: 600px;
     width: 100%;
+    transition: height 0.3s ease;
 }
 
 button {
@@ -246,6 +247,67 @@ button:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+#name-input-container {
+    width: 100%;
+    margin-top: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+#name-input-container.hidden {
+    height: 0;
+    margin-top: 0;
+}
+
+#color-name-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+#color-name-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+#name-result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+#name-result.hidden {
+    display: none;
+}
+
+#name-result-color {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#name-result-hex {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 16px;
+    color: #1a1a1a;
+}
+
+.hidden {
+    display: none;
+}
+
 @media (max-width: 768px) {
     body {
         padding: 20px 16px 90px 16px;
@@ -289,6 +351,29 @@ button:hover {
     
     .variation-color {
         height: 80px;
+    }
+    
+    #name-input-container {
+        margin-top: 12px;
+    }
+    
+    #color-name-input {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    #name-result {
+        padding: 10px;
+        margin-top: 10px;
+    }
+    
+    #name-result-color {
+        width: 32px;
+        height: 32px;
+    }
+    
+    #name-result-hex {
+        font-size: 14px;
     }
 }
 

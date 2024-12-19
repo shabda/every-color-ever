@@ -223,8 +223,8 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     const colorPicker = document.getElementById('color-picker');
     if (colorPicker) {
         colorPicker.addEventListener('input', (e) => {
-            const newColor = e.target.value;
-            const rgb = hexToRgb(newColor);
+            const color = e.target.value;
+            const rgb = hexToRgb(color);
             if (rgb) {
                 updateColor(rgb.r, rgb.g, rgb.b);
             }

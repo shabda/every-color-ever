@@ -147,14 +147,42 @@ h1 {
         'opsz' 24;
 }
 
+.color-picker-wrapper {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-picker-wrapper button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
 #color-picker {
     position: absolute;
-    opacity: 0;
+    top: 0;
+    left: 0;
     width: 40px;
     height: 40px;
     padding: 0;
     margin: 0;
+    opacity: 0;
     cursor: pointer;
+    z-index: 1;
 }
 
 #color-picker::-webkit-color-swatch-wrapper {
@@ -308,9 +336,10 @@ button:hover {
 
 .action-buttons {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     margin-top: 16px;
     margin-bottom: 16px;
+    align-items: center;
 }
 
 #name-to-hex-form {

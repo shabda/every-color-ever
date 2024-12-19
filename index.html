@@ -23,10 +23,12 @@
                         <button id="random-color-btn" class="icon-button" aria-label="Generate random color">
                             <span class="material-symbols-rounded">refresh</span>
                         </button>
-                        <label for="color-picker" class="icon-button" aria-label="Pick a color">
-                            <span class="material-symbols-rounded">palette</span>
-                            <input type="color" id="color-picker" class="hidden">
-                        </label>
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="color-picker" aria-label="Pick a color">
+                            <button class="icon-button" aria-label="Pick a color">
+                                <span class="material-symbols-rounded">palette</span>
+                            </button>
+                        </div>
                         <button id="name-to-hex-btn" class="icon-button" aria-label="Convert name to hex">
                             <span class="material-symbols-rounded">text_fields</span>
                         </button>

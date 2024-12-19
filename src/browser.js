@@ -1,5 +1,5 @@
 const { rgbToHex, hexToRgb, rgbToHsv, hsvToRgb } = require('./colorUtils');
-const { getColorName } = require('./colorNaming');
+const { getColorName, nameToRgb } = require('./colorNaming');
 
 // Function to generate variations of a color
 function generateVariations(hex) {
@@ -148,8 +148,9 @@ function updateColor(r, g, b) {
         document.getElementById('hex-value').textContent = hex;
         document.getElementById('color-name').textContent = name;
         
-        // Update URL with the new color
-        window.history.replaceState({}, '', `?color=${hex.substring(1)}`);
+        // Update URL with the color name using dashes instead of spaces
+        const urlName = name.replace(/\s+/g, '-');
+        window.history.replaceState({}, '', `?color=${urlName}`);
         
         // Update color picker
         document.getElementById('color-picker').value = hex;
@@ -191,6 +192,25 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         }
     };
 
+    // Function to get color from URL
+    function getUrlColor() {
+        const params = new URLSearchParams(window.location.search);
+        const colorName = params.get('color');
+        if (!colorName) return null;
+        
+        try {
+            // Convert dashes back to spaces for color name lookup
+            const decodedName = colorName.replace(/-+/g, ' ');
+            const rgb = nameToRgb(decodedName);
+            if (rgb) {
+                return rgbToHex(rgb.r, rgb.g, rgb.b);
+            }
+        } catch (error) {
+            console.error('Error converting color name to RGB:', error);
+        }
+        return null;
+    }
+
     // Initialize with URL color or random color
     window.onload = function() {
         const urlColor = getUrlColor();
@@ -221,25 +241,27 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         
         // Check URL for color parameter
         const params = new URLSearchParams(window.location.search);
-        const colorParam = params.get('color');
+        const colorName = params.get('color');
         
-        if (colorParam) {
-            const rgb = hexToRgb('#' + colorParam);
-            if (rgb) {
-                updateColor(rgb.r, rgb.g, rgb.b);
-            } else {
-                console.error('Invalid hex color:', '#' + colorParam);
+        if (colorName) {
+            try {
+                // Convert dashes back to spaces for color name lookup
+                const decodedName = colorName.replace(/-+/g, ' ');
+                const rgb = nameToRgb(decodedName);
+                if (rgb) {
+                    updateColor(rgb.r, rgb.g, rgb.b);
+                } else {
+                    console.error('Invalid color name:', decodedName);
+                    generateNewColor();
+                }
+            } catch (error) {
+                console.error('Error processing color name:', error);
                 generateNewColor();
             }
         } else {
             generateNewColor();
         }
     });
-}
-
-function getUrlColor() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('color') ? '#' + params.get('color') : null;
 }
 
 // Expose functions to global scope

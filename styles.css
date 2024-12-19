@@ -111,26 +111,24 @@ h1 {
 }
 
 .icon-button {
-    cursor: pointer;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
     border: none;
-    padding: 0;
-    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.2);
     color: white;
-    flex-shrink: 0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
 }
 
 .icon-button:hover {
     background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
 }
 
 .icon-button span.material-symbols-rounded {
@@ -152,11 +150,26 @@ h1 {
 #color-picker {
     position: absolute;
     opacity: 0;
-    width: 0;
-    height: 0;
+    width: 40px;
+    height: 40px;
     padding: 0;
     margin: 0;
+    cursor: pointer;
+}
+
+#color-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#color-picker::-webkit-color-swatch {
     border: none;
+    border-radius: 50%;
+}
+
+/* Firefox */
+#color-picker::-moz-color-swatch {
+    border: none;
+    border-radius: 50%;
 }
 
 .button-group {

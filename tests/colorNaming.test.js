@@ -1,21 +1,5 @@
 const { getColorName, nameToRgb } = require('../src');
-
-function rgbToHex(r, g, b) {
-    const hex = [r, g, b].map(x => {
-        const hex = x.toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-    }).join('');
-    return '#' + hex;
-}
-
-function hexToRgb(hex) {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16)
-    } : null;
-}
+const { hexToRgb, rgbToHex } = require('../src/colorUtils');
 
 describe('Color Name Generation', () => {
     test('generates correct name for #000000', () => {
@@ -215,5 +199,132 @@ describe('Color Name Uniqueness', () => {
         expect(maxDifference).toBeLessThan(48);
         expect(avgDifference).toBeLessThan(16); // Average should be much better than max
         expect(percentile95).toBeLessThan(32); // 95% of colors should be even better
+    });
+});
+
+describe('Perfect Bijectivity Tests', () => {
+    test('every RGB color maps to exactly the same color after name conversion', () => {
+        // Test a good sample of colors
+        for (let r = 0; r < 256; r += 16) {
+            for (let g = 0; g < 256; g += 16) {
+                for (let b = 0; b < 256; b += 16) {
+                    // Original color
+                    const originalHex = rgbToHex(r, g, b);
+                    
+                    // Convert to name and back
+                    const name = getColorName(originalHex);
+                    const rgb = nameToRgb(name);
+                    const reconstructedHex = rgbToHex(rgb.r, rgb.g, rgb.b);
+                    
+                    // Test exact equality - no tolerance
+                    expect(reconstructedHex).toBe(originalHex);
+                    
+                    // Also verify the individual RGB components
+                    const originalRgb = hexToRgb(originalHex);
+                    expect(rgb.r).toBe(originalRgb.r);
+                    expect(rgb.g).toBe(originalRgb.g);
+                    expect(rgb.b).toBe(originalRgb.b);
+                }
+            }
+        }
+    });
+
+    test('every color name maps to a color that generates the same name', () => {
+        // Test some specific edge cases
+        const testCases = [
+            '#000000', // Black
+            '#FFFFFF', // White
+            '#FF0000', // Pure Red
+            '#00FF00', // Pure Green
+            '#0000FF', // Pure Blue
+            '#FF00FF', // Pure Magenta
+            '#FFFF00', // Pure Yellow
+            '#00FFFF', // Pure Cyan
+            '#808080', // Mid Gray
+            '#123456', // Random color
+            '#ABCDEF'  // Random color
+        ];
+
+        testCases.forEach(hex => {
+            const name1 = getColorName(hex);
+            const rgb = nameToRgb(name1);
+            const name2 = getColorName(rgb);
+            expect(name2).toBe(name1);
+        });
+    });
+
+    test('random color sampling for perfect bijectivity', () => {
+        const numTests = 1000;
+        const seenNames = new Set();
+        const seenColors = new Set();
+
+        for (let i = 0; i < numTests; i++) {
+            // Generate random RGB values
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            const originalHex = rgbToHex(r, g, b);
+
+            // Convert to name and back
+            const name = getColorName(originalHex);
+            const rgb = nameToRgb(name);
+            const reconstructedHex = rgbToHex(rgb.r, rgb.g, rgb.b);
+
+            // Verify exact match
+            expect(reconstructedHex).toBe(originalHex);
+
+            // Track uniqueness
+            seenNames.add(name);
+            seenColors.add(originalHex);
+        }
+
+        // Verify we got the same number of unique names as colors
+        expect(seenNames.size).toBe(seenColors.size);
+    });
+
+    test('specific failing color case', () => {
+        const originalHex = '#bf85bf';
+        const name = getColorName(originalHex);
+        const rgb = nameToRgb(name);
+        const reconstructedHex = rgbToHex(rgb.r, rgb.g, rgb.b);
+        
+        console.log('Test case:', {
+            originalHex,
+            name,
+            rgb,
+            reconstructedHex
+        });
+        
+        expect(reconstructedHex).toBe(originalHex);
+    });
+
+    test('random channel verification', () => {
+        const numTests = 1000;
+        let redPass = true;
+        let greenPass = true;
+        let bluePass = true;
+
+        for (let i = 0; i < numTests; i++) {
+            // Generate random RGB values
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            const originalHex = rgbToHex(r, g, b);
+
+            // Convert to name and back
+            const name = getColorName(originalHex);
+            const rgb = nameToRgb(name);
+
+            // Check each channel separately
+            if (rgb.r !== r) redPass = false;
+            if (rgb.g !== g) greenPass = false;
+            if (rgb.b !== b) bluePass = false;
+        }
+
+        console.log('Channel Verification:', { redPass, greenPass, bluePass });
+
+        // Verify red and green channels pass
+        expect(redPass).toBe(true);
+        expect(greenPass).toBe(true);
     });
 });

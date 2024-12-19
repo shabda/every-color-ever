@@ -4,6 +4,7 @@
   "description": "A color name generator with tests",
   "main": "src/index.js",
   "scripts": {
+    "default": "jest",
     "test": "jest",
     "start": "http-server",
     "build": "webpack",

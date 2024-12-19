@@ -16,34 +16,93 @@ function rgbToHex(r, g, b) {
 }
 
 function getMsbIndex(rgb) {
-    // We'll use the high bits to determine the base color region
+    // Extract 2 high bits from each component
     const rHigh = (rgb.r >> 6) & 0x03;
     const gHigh = (rgb.g >> 6) & 0x03;
     const bHigh = (rgb.b >> 6) & 0x03;
-    return (bHigh << 4) | (rHigh << 2) | gHigh;
+    
+    // Pack them into a 6-bit value: BBRRGG
+    const msbIndex = (bHigh << 4) | (rHigh << 2) | gHigh;
+    
+    console.log('MSB Analysis:', {
+        original: { r: rgb.r.toString(2), g: rgb.g.toString(2), b: rgb.b.toString(2) },
+        highBits: { r: rHigh, g: gHigh, b: bHigh },
+        msbIndex: msbIndex.toString(2).padStart(6, '0')
+    });
+    
+    return msbIndex;
 }
 
 function getRemainingBits(rgb) {
-    // Store the exact lower 6 bits for each component
-    return {
-        r: rgb.r & 0x3F,
-        g: rgb.g & 0x3F,
-        b: rgb.b & 0x3F
-    };
+    // Get lower 6 bits from each component
+    const r = rgb.r & 0x3F;
+    const g = rgb.g & 0x3F;
+    const b = rgb.b & 0x3F;
+
+    console.log('Bit Extraction:', {
+        input: {
+            r: rgb.r.toString(2).padStart(8, '0'),
+            g: rgb.g.toString(2).padStart(8, '0'),
+            b: rgb.b.toString(2).padStart(8, '0')
+        },
+        mask: '00111111',
+        extracted: {
+            r: r.toString(2).padStart(6, '0'),
+            g: g.toString(2).padStart(6, '0'),
+            b: b.toString(2).padStart(6, '0')
+        },
+        decimal: { r, g, b }
+    });
+
+    const bits = { r, g, b };
+
+    // Verify the bits are correctly masked
+    console.log('Verification:', {
+        allBitsInRange: 
+            bits.r <= 0x3F && bits.g <= 0x3F && bits.b <= 0x3F,
+        actualValues: {
+            r: bits.r,
+            g: bits.g,
+            b: bits.b
+        }
+    });
+
+    return bits;
 }
 
 function reconstructRgb(msbIndex, remainingBits) {
-    // Extract the high bits from msbIndex
+    // Extract high bits from msbIndex (BBRRGG format)
     const bHigh = (msbIndex >> 4) & 0x03;
     const rHigh = (msbIndex >> 2) & 0x03;
     const gHigh = msbIndex & 0x03;
 
-    // Combine with the remaining bits
-    return {
-        r: (rHigh << 6) | remainingBits.r,
-        g: (gHigh << 6) | remainingBits.g,
-        b: (bHigh << 6) | remainingBits.b
+    // Correctly combine high bits with remaining bits
+    const result = {
+        r: (rHigh << 6) | (remainingBits.r & 0x3F),
+        g: (gHigh << 6) | (remainingBits.g & 0x3F),
+        b: (bHigh << 6) | (remainingBits.b & 0x3F) // Ensure correct combination
     };
+    
+    console.log('Reconstruction:', {
+        msbIndex: msbIndex.toString(2).padStart(6, '0'),
+        highBits: { 
+            r: rHigh.toString(2).padStart(2, '0'),
+            g: gHigh.toString(2).padStart(2, '0'),
+            b: bHigh.toString(2).padStart(2, '0')
+        },
+        remainingBits: {
+            r: remainingBits.r.toString(2).padStart(6, '0'),
+            g: remainingBits.g.toString(2).padStart(6, '0'),
+            b: remainingBits.b.toString(2).padStart(6, '0')
+        },
+        result: {
+            r: result.r.toString(2).padStart(8, '0'),
+            g: result.g.toString(2).padStart(8, '0'),
+            b: result.b.toString(2).padStart(8, '0')
+        }
+    });
+
+    return result;
 }
 
 function rgbToHsv(r, g, b) {

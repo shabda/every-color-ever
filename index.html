@@ -17,7 +17,13 @@
             </h3>
             <div id="color-display">
                 <div class="color-text-overlay">
-                    <div id="hex-value"></div>
+                    <div class="hex-container">
+                        <div id="hex-value"></div>
+                        <label for="color-picker" class="color-picker-label">
+                            <span class="material-symbols-rounded">palette</span>
+                            <input type="color" id="color-picker" aria-label="Choose color">
+                        </label>
+                    </div>
                     <div id="color-name"></div>
                 </div>
             </div>
@@ -29,13 +35,14 @@
             <span class="material-symbols-rounded">autorenew</span>
             Random Color
         </button>
-        <input type="color" id="color-picker" aria-label="Choose color">
         <button id="name-to-hex-btn">
             <span class="material-symbols-rounded">text_format</span>
             Name to Hex
         </button>
         <div id="name-input-container" class="hidden">
-            <input type="text" id="color-name-input" placeholder="Enter color name..." aria-label="Enter color name">
+            <form id="name-to-hex-form">
+                <input type="text" id="color-name-input" placeholder="Enter color name..." aria-label="Enter color name">
+            </form>
             <div id="name-result" class="hidden">
                 <div id="name-result-color"></div>
                 <div id="name-result-hex"></div>

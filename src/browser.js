@@ -236,6 +236,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         const nameResult = document.getElementById('name-result');
         const nameResultColor = document.getElementById('name-result-color');
         const nameResultHex = document.getElementById('name-result-hex');
+        const nameToHexForm = document.getElementById('name-to-hex-form');
         
         if (newColorBtn) {
             newColorBtn.addEventListener('click', generateNewColor);
@@ -250,21 +251,36 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
             });
         }
 
+        function processColorName(colorName) {
+            try {
+                const rgb = nameToRgb(colorName);
+                if (rgb) {
+                    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+                    nameResultColor.style.backgroundColor = hex;
+                    nameResultHex.textContent = hex;
+                    nameResult.classList.remove('hidden');
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error processing color name:', error);
+            }
+            nameResult.classList.add('hidden');
+            return false;
+        }
+
         if (nameInput) {
             nameInput.addEventListener('input', () => {
+                processColorName(nameInput.value.trim());
+            });
+        }
+
+        if (nameToHexForm) {
+            nameToHexForm.addEventListener('submit', (e) => {
+                e.preventDefault();
                 const colorName = nameInput.value.trim();
-                try {
-                    const rgb = nameToRgb(colorName);
-                    if (rgb) {
-                        const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-                        nameResultColor.style.backgroundColor = hex;
-                        nameResultHex.textContent = hex;
-                        nameResult.classList.remove('hidden');
-                    } else {
-                        nameResult.classList.add('hidden');
-                    }
-                } catch (error) {
-                    nameResult.classList.add('hidden');
+                if (processColorName(colorName)) {
+                    // Optionally clear the input or keep it for further testing
+                    // nameInput.value = '';
                 }
             });
         }

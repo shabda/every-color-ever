@@ -32,15 +32,10 @@ function getColorName(hex) {
     const baseColor = baseColors[msbIndex];
 
     // Map the remaining bits to modifiers
-    // We'll use the bits to index into our modifier arrays
-    const luminosityIndex = remainingBits.r;
-    const purityIndex = remainingBits.g;
-    const atmosphericIndex = remainingBits.b;
-
-    // Ensure we don't exceed array bounds
-    const luminosity = luminosityWords[luminosityIndex % luminosityWords.length];
-    const purity = purityWords[purityIndex % purityWords.length];
-    const atmospheric = atmosphericWords[atmosphericIndex % atmosphericWords.length];
+    // Each component is already masked to 6 bits (0-63) by getRemainingBits
+    const luminosity = luminosityWords[remainingBits.r];
+    const purity = purityWords[remainingBits.g];
+    const atmospheric = atmosphericWords[remainingBits.b];
 
     return `${luminosity} ${purity} ${atmospheric} ${baseColor}`;
 }
@@ -62,11 +57,14 @@ function nameToRgb(colorName) {
     }
 
     // Reconstruct the RGB values using our utility function
-    return reconstructRgb(baseColorIndex, {
-        r: luminosityIndex,
-        g: purityIndex,
-        b: atmosphericIndex
-    });
+    // Use the same mapping as in getColorName
+    const remainingBits = {
+        r: luminosityIndex,  // maps to luminosity
+        g: purityIndex,      // maps to purity
+        b: atmosphericIndex  // maps to atmospheric
+    };
+
+    return reconstructRgb(baseColorIndex, remainingBits);
 }
 
 module.exports = {

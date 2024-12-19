@@ -71,7 +71,7 @@ const atmosphericWords = [
     "Thunderous", "Tumultuous", "Violent", "Raging",
     "Windswept", "Gusty", "Blustery", "Squalling",
     "Misty", "Foggy", "Hazy", "Cloudy",
-    "Nebulous", "Vaporous", "Ethereal", "Airy",
+    "Nebulous", "Vaporous", "Spiritual", "Airy",
     "Breezy", "Flowing", "Drifting", "Floating",
     "Wispy", "Delicate", "Gentle", "Tender",
     "Tranquil", "Peaceful", "Serene", "Calm",

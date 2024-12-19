@@ -1,5 +1,7 @@
 # Color Namer - Color Name Explorer
 
+![Tests](https://github.com/[username]/every-color-ever/actions/workflows/test.yml/badge.svg)
+
 A web-based tool that generates unique, descriptive names for any RGB color and shows related color variations.
 
 ## Concept

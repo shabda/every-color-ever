@@ -17,24 +17,23 @@
             </h3>
             <div id="color-display">
                 <div class="color-text-overlay">
-                    <div class="hex-container">
-                        <div id="hex-value"></div>
-                        <label for="color-picker" class="color-picker-label">
+                    <div id="color-name"></div>
+                    <div id="hex-value"></div>
+                    <div class="color-actions">
+                        <button class="icon-button" id="random-color-btn" aria-label="Generate random color">
+                            <span class="material-symbols-rounded">autorenew</span>
+                        </button>
+                        <label class="icon-button" for="color-picker" aria-label="Choose color">
                             <span class="material-symbols-rounded">palette</span>
-                            <input type="color" id="color-picker" aria-label="Choose color">
+                            <input type="color" id="color-picker">
                         </label>
                     </div>
-                    <div id="color-name"></div>
                 </div>
             </div>
         </div>
         <div id="variations"></div>
     </div>
     <div class="button-group fixed-bottom">
-        <button id="new-color-btn">
-            <span class="material-symbols-rounded">autorenew</span>
-            Random Color
-        </button>
         <button id="name-to-hex-btn">
             <span class="material-symbols-rounded">text_format</span>
             Name to Hex

@@ -141,23 +141,68 @@ function updateColor(r, g, b) {
     }
 
     const hex = rgbToHex(r, g, b);
-    const name = getColorName({r, g, b}); // Pass RGB as an object
+    const colorName = getColorName({r, g, b}); // Fix: Pass RGB as an object
     
-    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-        document.getElementById('color-display').style.backgroundColor = hex;
-        document.getElementById('hex-value').textContent = hex;
-        document.getElementById('color-name').textContent = name;
-        
-        // Update URL with the color name using dashes instead of spaces
-        const urlName = name.replace(/\s+/g, '-');
-        window.history.replaceState({}, '', `?color=${urlName}`);
-        
-        // Update color picker
-        document.getElementById('color-picker').value = hex;
+    // Update color display
+    const colorDisplay = document.getElementById('color-display');
+    if (colorDisplay) {
+        colorDisplay.style.backgroundColor = hex;
     }
     
+    // Update text displays
+    const hexValue = document.getElementById('hex-value');
+    const nameValue = document.getElementById('color-name');
+    if (hexValue) hexValue.textContent = hex;
+    if (nameValue) nameValue.textContent = colorName;
+    
+    // Update URL without reloading
+    const url = new URL(window.location);
+    url.searchParams.set('color', colorName.replace(/ /g, '-'));
+    window.history.pushState({}, '', url);
+
+    // Update color picker if it exists
+    const colorPicker = document.getElementById('color-picker');
+    if (colorPicker) {
+        colorPicker.value = hex;
+    }
+
     // Generate and display variations
-    generateVariations(hex);
+    const variations = generateVariations(hex);
+    displayVariations(variations);
+
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Function to display color variations
+function displayVariations(variations) {
+    const container = document.getElementById('variations');
+    if (!container) return;
+
+    container.innerHTML = '';
+    variations.forEach((variation, index) => {
+        const rgb = hexToRgb(variation.hex);
+        const colorName = rgb ? getColorName(rgb) : '';
+        
+        const div = document.createElement('div');
+        div.className = 'variation-card';
+        div.innerHTML = `
+            <div class="variation-color" style="background-color: ${variation.hex}"></div>
+            <div class="variation-info">
+                <div class="variation-hex">${variation.hex}</div>
+                <div class="variation-name">${colorName}</div>
+            </div>
+        `;
+        
+        // Add click handler to update main color
+        div.addEventListener('click', () => {
+            if (rgb) {
+                updateColor(rgb.r, rgb.g, rgb.b);
+            }
+        });
+        
+        container.appendChild(div);
+    });
 }
 
 // Function to copy hex value to clipboard
@@ -229,7 +274,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
 
     // Add event listeners when DOM is ready
     document.addEventListener('DOMContentLoaded', () => {
-        const newColorBtn = document.getElementById('new-color-btn');
+        const randomColorBtn = document.getElementById('random-color-btn');
         const nameToHexBtn = document.getElementById('name-to-hex-btn');
         const nameInput = document.getElementById('color-name-input');
         const nameInputContainer = document.getElementById('name-input-container');
@@ -238,8 +283,8 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         const nameResultHex = document.getElementById('name-result-hex');
         const nameToHexForm = document.getElementById('name-to-hex-form');
         
-        if (newColorBtn) {
-            newColorBtn.addEventListener('click', generateNewColor);
+        if (randomColorBtn) {
+            randomColorBtn.addEventListener('click', generateNewColor);
         }
 
         if (nameToHexBtn) {
@@ -259,13 +304,13 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
                     nameResultColor.style.backgroundColor = hex;
                     nameResultHex.textContent = hex;
                     nameResult.classList.remove('hidden');
-                    return true;
+                    return { hex, rgb };
                 }
             } catch (error) {
                 console.error('Error processing color name:', error);
             }
             nameResult.classList.add('hidden');
-            return false;
+            return null;
         }
 
         if (nameInput) {
@@ -278,9 +323,11 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
             nameToHexForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const colorName = nameInput.value.trim();
-                if (processColorName(colorName)) {
-                    // Optionally clear the input or keep it for further testing
-                    // nameInput.value = '';
+                const result = processColorName(colorName);
+                if (result) {
+                    updateColor(result.rgb.r, result.rgb.g, result.rgb.b);
+                    nameInput.value = '';
+                    nameInputContainer.classList.add('hidden');
                 }
             });
         }

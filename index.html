@@ -34,6 +34,15 @@
                             <span class="material-symbols-rounded">help</span>
                         </button>
                     </div>
+                    <div id="name-input-container" class="hidden">
+                        <form id="name-to-hex-form">
+                            <input type="text" id="color-name-input" placeholder="Enter color name..." aria-label="Enter color name">
+                        </form>
+                        <div id="name-result" class="hidden">
+                            <div id="name-result-color"></div>
+                            <div id="name-result-hex"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="help-content" class="help-content hidden">
@@ -78,15 +87,6 @@
             <div id="variations-section">
                 <p class="variations-message">Don't like this color? We have 16.7 million more for you to try.</p>
                 <div id="variations"></div>
-            </div>
-            <div id="name-input-container" class="hidden">
-                <form id="name-to-hex-form">
-                    <input type="text" id="color-name-input" placeholder="Enter color name..." aria-label="Enter color name">
-                </form>
-                <div id="name-result" class="hidden">
-                    <div id="name-result-color"></div>
-                    <div id="name-result-hex"></div>
-                </div>
             </div>
         </div>
         <footer class="site-footer">

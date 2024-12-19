@@ -158,4 +158,49 @@ describe('Color Name Uniqueness', () => {
             expect(getColorName(rgb)).toBe(name);
         });
     });
+
+    test('bidirectional color conversion maintains reasonable tolerance', () => {
+        // Helper function to generate random hex color
+        function randomHex() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return rgbToHex(r, g, b);
+        }
+
+        // Helper function to calculate color difference
+        function colorDifference(hex1, hex2) {
+            const rgb1 = hexToRgb(hex1);
+            const rgb2 = hexToRgb(hex2);
+            return Math.sqrt(
+                Math.pow(rgb1.r - rgb2.r, 2) +
+                Math.pow(rgb1.g - rgb2.g, 2) +
+                Math.pow(rgb1.b - rgb2.b, 2)
+            );
+        }
+
+        const numTests = 1000;
+        let maxDifference = 0;
+        let totalDifference = 0;
+
+        for (let i = 0; i < numTests; i++) {
+            const originalHex = randomHex();
+            const name = getColorName(originalHex);
+            const rgb = nameToRgb(name);
+            const resultHex = rgbToHex(rgb.r, rgb.g, rgb.b);
+            
+            const difference = colorDifference(originalHex, resultHex);
+            maxDifference = Math.max(maxDifference, difference);
+            totalDifference += difference;
+
+            // Allow for small differences due to bit masking
+            // A difference of 48 means each channel can be off by about 16 values
+            expect(difference).toBeLessThan(48);
+        }
+
+        // Log statistics
+        console.log(`Tested ${numTests} random colors`);
+        console.log(`Maximum color difference: ${maxDifference}`);
+        console.log(`Average color difference: ${totalDifference / numTests}`);
+    });
 });
